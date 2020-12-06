@@ -2,6 +2,7 @@
 	"scripts": {
 		"ts-node": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm",
 		"start:01": "npm run -s ts-node -- src/solutions/01/index.ts",
+		"start:02": "npm run -s ts-node -- src/solutions/02/index.ts",
 		"start:03": "npm run -s ts-node -- src/solutions/03/index.ts",
 		"start:05": "npm run -s ts-node -- src/solutions/05/index.js",
 		"start:06": "npm run -s ts-node -- src/solutions/06/index.ts"

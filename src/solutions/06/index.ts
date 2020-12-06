@@ -1,5 +1,5 @@
 import { removeDuplicates } from '../../lib';
-import { length, pipe } from '../../lib/fp';
+import { count, pipe } from '../../lib/fp';
 import { collect, map, split, sum, flatten } from '../../lib/fp/generators';
 import { readFromStdin } from '../../lib/fs';
 
@@ -22,7 +22,7 @@ const unionOfAnswers: (x: typeof answers) => number = pipe(
 		pipe(
 			flatten,
 			removeDuplicates,
-			length,
+			count,
 		),
 	),
 	sum,
@@ -33,7 +33,7 @@ const intersectionOfAnswers: (x: typeof answers) => number = pipe(
 	map(
 		pipe(
 			intersection,
-			length,
+			count,
 		),
 	),
 	sum,

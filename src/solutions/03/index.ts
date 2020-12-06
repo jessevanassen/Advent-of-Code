@@ -1,6 +1,6 @@
 import { readLinesFromStdin } from '../../lib/fs';
 import { split, map, filter, collect, product, range, } from '../../lib/fp/generators';
-import { eq, length, pipe, truthy } from '../../lib/fp';
+import { eq, count, pipe, truthy } from '../../lib/fp';
 
 interface Slope {
 	right: number;
@@ -36,10 +36,10 @@ console.log(`Encountered ${treeCountsOfSlopes[1]} for slope ${JSON.stringify(slo
 console.log(`Each listed slope multiplied: ${product(treeCountsOfSlopes)}`);
 
 function treeCount(trees: Area) {
-	return ({ right, down }: Slope) => 
+	return ({ right, down }: Slope) =>
 		pipe(
 			filter(containsTree(trees, right)),
-			length,
+			count,
 		)(range(trees.length, { step: down }));
 }
 

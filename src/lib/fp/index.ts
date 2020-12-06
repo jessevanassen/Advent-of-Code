@@ -4,7 +4,7 @@ export function eq(value: unknown) {
 
 export const truthy = (x: any) => !!x;
 
-export function length(iterable: Iterable<any>): number {
+export function count(iterable: Iterable<any>): number {
 	return Array.isArray(iterable) ?
 		iterable.length :
 		[...iterable].length;
