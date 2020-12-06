@@ -69,6 +69,10 @@ export function collect<T>(iterable: Iterable<T>): T[] {
 	return [...iterable];
 }
 
+export function first<T>(iterable: Iterable<T>): T | undefined {
+	return iterable[Symbol.iterator]().next().value;
+}
+
 export function split(separator = ''): (input: string) => IterableIterator<string> {
 	if (separator === '') {
 		return (input: string) => input[Symbol.iterator]();
