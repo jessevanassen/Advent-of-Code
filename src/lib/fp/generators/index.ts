@@ -1,27 +1,41 @@
+import { pipe } from "..";
+
 export function* range(end: number, { start = 0, step = 1 } = {}): IterableIterator<number> {
 	for (let i = start; i < end; i += step) {
 		yield i;
 	}
 }
 
-export function map<X, Y>(fn: (x: X) => Y): (iterable: Iterable<X>) => IterableIterator<Y> {
-	return function*(iterable: Iterable<X>) {
+export function map<T, U>(fn: (x: T) => U): (iterable: Iterable<T>) => IterableIterator<U> {
+	return function*(iterable: Iterable<T>) {
 		for (const x of iterable) {
 			yield fn(x);
 		}
 	};
 }
 
-export function forEach<X>(fn: (x: X) => void) {
-	return (iterable: Iterable<X>) => {
+export function* flatten<T>(iterable: Iterable<Iterable<T>>) {
+	for (const i of iterable) {
+		yield* i;
+	}
+}
+
+export function flatMap<T, U>(fn: (x: T) => Iterable<U>): (iterable: Iterable<T>) => IterableIterator<U> {
+	return function(iterable: Iterable<T>) {
+		return flatten(map(fn)(iterable));
+	}
+}
+
+export function forEach<T>(fn: (x: T) => void) {
+	return (iterable: Iterable<T>) => {
 		for (const x of iterable) {
 			fn(x);
 		}
 	};
 }
 
-export function filter<X>(predicate: (x: X) => boolean): (iterable: Iterable<X>) => IterableIterator<X> {
-	return function*(iterable: Iterable<X>) {
+export function filter<T>(predicate: (x: T) => boolean): (iterable: Iterable<T>) => IterableIterator<T> {
+	return function*(iterable: Iterable<T>) {
 		for (const x of iterable) {
 			if (predicate(x)) {
 				yield x;
@@ -30,8 +44,8 @@ export function filter<X>(predicate: (x: X) => boolean): (iterable: Iterable<X>)
 	};
 }
 
-export function reduce<X, Y>(fn: (acc: Y, x: X) => Y, initial?: Y): (iterable: Iterable<X>) => Y {
-	return (iterable: Iterable<X>) => {
+export function reduce<T, U>(fn: (acc: U, x: T) => U, initial?: U): (iterable: Iterable<T>) => U {
+	return (iterable: Iterable<T>) => {
 		const iterator = iterable[Symbol.iterator]();
 		let acc = initial || iterator.next().value;
 
@@ -39,7 +53,7 @@ export function reduce<X, Y>(fn: (acc: Y, x: X) => Y, initial?: Y): (iterable: I
 			const { done, value } = iterator.next();
 			if (done)
 				break;
-			
+
 			acc = fn(acc, value);
 		}
 
