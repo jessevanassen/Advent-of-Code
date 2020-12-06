@@ -1,8 +1,8 @@
 {
 	"scripts": {
 		"ts-node": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm",
-		"start:03": "npm run --silent ts-node -- src/solutions/03/index.ts",
-		"start:05": "node src/solutions/05/index.js"
+		"start:03": "npm run -s ts-node -- src/solutions/03/index.ts",
+		"start:05": "npm run -s ts-node -- src/solutions/05/index.js"
 	},
 	"private": true,
 	"type": "module",

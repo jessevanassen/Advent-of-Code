@@ -3,6 +3,7 @@
 		"strict": true,
 		"moduleResolution": "node",
 		"module": "ESNext",
-		"target": "ESNext"
+		"target": "ESNext",
+		"allowJs": true
 	}
 }
