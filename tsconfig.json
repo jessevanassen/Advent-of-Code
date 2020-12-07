@@ -4,6 +4,7 @@
 		"moduleResolution": "node",
 		"module": "ESNext",
 		"target": "ESNext",
-		"allowJs": true
+		"allowJs": true,
+		"noEmit": true
 	}
 }

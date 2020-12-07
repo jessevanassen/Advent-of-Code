@@ -47,7 +47,7 @@ export function filter<T>(predicate: (x: T) => boolean): (iterable: Iterable<T>)
 export function reduce<T, U>(fn: (acc: U, x: T) => U, initial?: U): (iterable: Iterable<T>) => U {
 	return (iterable: Iterable<T>) => {
 		const iterator = iterable[Symbol.iterator]();
-		let acc = initial || iterator.next().value;
+		let acc = initial ?? iterator.next().value;
 
 		while (true) {
 			const { done, value } = iterator.next();
@@ -67,6 +67,10 @@ export const product = reduce((x, y: number) => x * y, 1);
 
 export function collect<T>(iterable: Iterable<T>): T[] {
 	return [...iterable];
+}
+
+export function fromEntries<T extends string | number, U>(iterable: Iterable<[T, U]>): Record<T, U> {
+	return reduce((acc, [key, value]: [T, U]) => (acc[key] = value, acc), {} as Record<T, U>)(iterable);
 }
 
 export function first<T>(iterable: Iterable<T>): T | undefined {
