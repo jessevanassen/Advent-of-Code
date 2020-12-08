@@ -1,5 +1,5 @@
-import { count, eq, inspect, pipe, truthy } from "../../lib/fp";
-import { collect, filter, map, split } from "../../lib/fp/generators";
+import { count, eq, pipe, truthy } from "../../lib/fp";
+import { collectToArray, filter, map, split } from "../../lib/fp/generators";
 import { readLinesFromStdin } from "../../lib/fs";
 
 const pattern = /^(\d+)-(\d+) ([a-z]): ([a-z]+)$/;
@@ -8,7 +8,7 @@ const passwords = pipe(
 	map(match(pattern)),
 	filter(truthy),
 	map(PasswordPolicy),
-	collect,
+	collectToArray,
 )(readLinesFromStdin());
 
 

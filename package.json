@@ -6,7 +6,8 @@
 		"start:03": "npm run -s ts-node -- src/solutions/03/index.ts",
 		"start:05": "npm run -s ts-node -- src/solutions/05/index.js",
 		"start:06": "npm run -s ts-node -- src/solutions/06/index.ts",
-		"start:07": "npm run -s ts-node -- src/solutions/07/index.ts"
+		"start:07": "npm run -s ts-node -- src/solutions/07/index.ts",
+		"start:08": "npm run -s ts-node -- src/solutions/08/index.ts"
 	},
 	"private": true,
 	"type": "module",

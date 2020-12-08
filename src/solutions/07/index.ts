@@ -1,5 +1,5 @@
 import { count, pipe } from '../../lib/fp';
-import { collect, filter, fromEntries, map, sum } from '../../lib/fp/generators';
+import { collectToArray, filter, fromEntries, map, sum } from '../../lib/fp/generators';
 import { readLinesFromStdin } from '../../lib/fs';
 
 const SHINY_GOLD = 'shiny gold';
@@ -40,7 +40,7 @@ function canContainShinyBag(bagRules: BagRules): string[] {
 	return pipe(
 		Object.keys,
 		filter(canContainShinyBag),
-		collect,
+		collectToArray,
 	)(bagRules);
 }
 

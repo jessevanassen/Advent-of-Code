@@ -1,5 +1,5 @@
 import { readLinesFromStdin } from '../../lib/fs';
-import { split, map, filter, collect, product, range, } from '../../lib/fp/generators';
+import { split, map, filter, collectToArray, product, range, } from '../../lib/fp/generators';
 import { eq, count, pipe, truthy } from '../../lib/fp';
 
 interface Slope {
@@ -22,14 +22,14 @@ const trees: Area = pipe(
 	map(pipe(
 		split(),
 		map(eq('#')),
-		collect,
+		collectToArray,
 	)),
-	collect,
+	collectToArray,
 )(readLinesFromStdin());
 
 const treeCountsOfSlopes = pipe(
 	map(treeCount(trees)),
-	collect,
+	collectToArray,
 )(slopes);
 
 console.log(`Encountered ${treeCountsOfSlopes[1]} for slope ${JSON.stringify(slopes[1])}`);

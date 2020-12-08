@@ -1,10 +1,10 @@
 import { pipe } from "../../lib/fp";
-import { collect, filter, first, forEach, map } from "../../lib/fp/generators";
+import { collectToArray, filter, first, map } from "../../lib/fp/generators";
 import { readLinesFromStdin } from "../../lib/fs";
 
 const expenses = pipe(
 	map(Number),
-	collect,
+	collectToArray,
 )(readLinesFromStdin());
 
 const expenseReport: (combinations: Iterable<number[]>) => number | undefined = pipe(

@@ -19,6 +19,10 @@ export function replace(pattern: RegExp, replacement: string) {
 	return (input: string) => input.replace(pattern, replacement);
 }
 
+export function not<T>(fn: (arg: T) => boolean): (arg: T) => boolean {
+	return (arg: T) => !fn(arg);
+}
+
 export function pipe<T0, T1>(...fns: [(x: T0) => T1]): (x: T0) => T1
 export function pipe<T0, T1, T2>(...fns: [(x: T0) => T1, (x: T1) => T2]): (x: T0) => T2
 export function pipe<T0, T1, T2, T3>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): (x: T0) => T3

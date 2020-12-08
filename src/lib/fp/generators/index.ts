@@ -65,7 +65,7 @@ export const sum = reduce((x, y: number) => x + y, 0);
 
 export const product = reduce((x, y: number) => x * y, 1);
 
-export function collect<T>(iterable: Iterable<T>): T[] {
+export function collectToArray<T>(iterable: Iterable<T>): T[] {
 	return [...iterable];
 }
 

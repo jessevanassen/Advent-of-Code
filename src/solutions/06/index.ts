@@ -1,6 +1,6 @@
 import { removeDuplicates } from '../../lib';
 import { count, pipe } from '../../lib/fp';
-import { collect, map, split, sum, flatten } from '../../lib/fp/generators';
+import { collectToArray, map, split, sum, flatten } from '../../lib/fp/generators';
 import { readFromStdin } from '../../lib/fs';
 
 
@@ -10,11 +10,11 @@ const answers = pipe(
 		split('\n'),
 		map(pipe(
 			split(),
-			collect,
+			collectToArray,
 		)),
-		collect
+		collectToArray
 	)),
-	collect,
+	collectToArray,
 )(readFromStdin());
 
 const unionOfAnswers: (x: typeof answers) => number = pipe(
