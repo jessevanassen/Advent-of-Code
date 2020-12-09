@@ -1,4 +1,4 @@
-import { pipe } from "..";
+import { not } from '..';
 
 export function* range(end: number, { start = 0, step = 1 } = {}): IterableIterator<number> {
 	for (let i = start; i < end; i += step) {
@@ -75,6 +75,21 @@ export function fromEntries<T extends string | number, U>(iterable: Iterable<[T,
 
 export function first<T>(iterable: Iterable<T>): T | undefined {
 	return iterable[Symbol.iterator]().next().value;
+}
+
+export function any<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
+	return iterable => {
+		for (const i of iterable) {
+			if (fn(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+export function all<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
+	return not(any<T>(not(fn)));
 }
 
 export function split(separator = ''): (input: string) => IterableIterator<string> {

@@ -1,6 +1,7 @@
-import { pipe } from "../../lib/fp";
-import { collectToArray, filter, first, map } from "../../lib/fp/generators";
-import { readLinesFromStdin } from "../../lib/fs";
+import { combinations2 } from '../../lib';
+import { pipe } from '../../lib/fp';
+import { collectToArray, filter, first, map } from '../../lib/fp/generators';
+import { readLinesFromStdin } from '../../lib/fs';
 
 const expenses = pipe(
 	map(Number),
@@ -16,14 +17,6 @@ const expenseReport: (combinations: Iterable<number[]>) => number | undefined = 
 console.log(expenseReport(combinations2(expenses)));
 console.log(expenseReport(combinations3(expenses)));
 
-
-function* combinations2(input: number[]): IterableIterator<number[]> {
-	for (let i = 0; i < input.length - 1; i++) {
-		for (let j = i + 1; j < input.length; j++) {
-			yield [input[i], input[j]];
-		}
-	}
-}
 
 function* combinations3(input: number[]): IterableIterator<number[]> {
 	for (let i = 0; i < input.length - 2; i++) {
