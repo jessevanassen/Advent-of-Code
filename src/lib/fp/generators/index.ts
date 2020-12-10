@@ -65,6 +65,10 @@ export const sum = reduce((x, y: number) => x + y, 0);
 
 export const product = reduce((x, y: number) => x * y, 1);
 
+export function max(iterable: Iterable<number>): number {
+	return Math.max(...iterable);
+}
+
 export function collectToArray<T>(iterable: Iterable<T>): T[] {
 	return [...iterable];
 }
@@ -107,4 +111,66 @@ export function split(separator = ''): (input: string) => IterableIterator<strin
 
 		yield input.substring(start);
 	};
+}
+
+export function take<T>(n: number) {
+	return function*(iterable: Iterable<T>): IterableIterator<T> {
+		const iterator = iterable[Symbol.iterator]();
+		let i = 0;
+		while (true) {
+			const { value, done } = iterator.next();
+			if (!done && i++ < n) {
+				yield value;
+			}
+		}
+	}
+}
+
+export function takeWhile<T>(predicate: (x: T) => boolean) {
+	return function*(iterable: Iterable<T>): IterableIterator<T> {
+		const iterator = iterable[Symbol.iterator]();
+		while (true) {
+			const { value, done } = iterator.next();
+			if (!done && predicate(value)) {
+				yield value;
+			}
+		}
+	}
+}
+
+export function* aperture<T>(iterable: Iterable<T>): IterableIterator<[T, T]> {
+	const iterator = iterable[Symbol.iterator]();
+	let prev = iterator.next().value;
+	while (true) {
+		const { done, value } = iterator.next();
+		if (done) {
+			break;
+		}
+
+		yield [prev, value];
+		prev = value;
+	}
+}
+
+export function skip<T>(n: number) {
+	return function*(iterable: Iterable<T>) {
+		if (Array.isArray(iterable)) {
+			for (let i = n; i < iterable.length; i++) {
+				yield iterable[i]
+			}
+			return;
+		}
+
+		const iterator = iterable[Symbol.iterator]();
+		for (let i = 0; i < n; i++) {
+			iterator.next();
+		}
+
+		while (true) {
+			const { value, done } = iterator.next();
+			console.log(value, done);
+			if (done) break;
+			yield value;
+		}
+	}
 }

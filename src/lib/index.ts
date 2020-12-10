@@ -9,3 +9,7 @@ export function* combinations2<T>(input: T[]): IterableIterator<T[]> {
 		}
 	}
 }
+
+export function log(prefix?: string) {
+	return (...x: unknown[]) => prefix ? console.log(prefix, ...x) : console.log(...x);
+}

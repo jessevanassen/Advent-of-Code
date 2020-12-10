@@ -23,6 +23,25 @@ export function not<T>(fn: (arg: T) => boolean): (arg: T) => boolean {
 	return (arg: T) => !fn(arg);
 }
 
+type Comparator<T> = (x: T, y: T) => number;
+
+export function sort<T>(comparator: Comparator<T>) {
+	return function(input: Iterable<T>) {
+		return [...input].sort(comparator);
+	};
+}
+
+export const numberComparator: Comparator<number> = (x, y) =>
+	x < y ? -1 :
+	x > y ? 1 :
+	0;
+
+export function reverseComparator<T>(comparator: Comparator<T>): Comparator<T> {
+	return function(x, y) {
+		return comparator(x, y) * -1;
+	}
+};
+
 export function pipe<T0, T1>(...fns: [(x: T0) => T1]): (x: T0) => T1
 export function pipe<T0, T1, T2>(...fns: [(x: T0) => T1, (x: T1) => T2]): (x: T0) => T2
 export function pipe<T0, T1, T2, T3>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): (x: T0) => T3
