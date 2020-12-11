@@ -6,6 +6,14 @@ export function* range(end: number, { start = 0, step = 1 } = {}): IterableItera
 	}
 }
 
+export function iterate<T>(fn: (x: T) => T) {
+	return function*(seed: T): IterableIterator<T> {
+		while (true) {
+			yield seed = fn(seed);
+		}
+	}
+}
+
 export function map<T, U>(fn: (x: T) => U): (iterable: Iterable<T>) => IterableIterator<U> {
 	return function*(iterable: Iterable<T>) {
 		for (const x of iterable) {
@@ -34,6 +42,8 @@ export function forEach<T>(fn: (x: T) => void) {
 	};
 }
 
+export function filter<T, U extends T>(predicate: (x: T) => x is U): (iterable: Iterable<T>) => IterableIterator<U>;
+export function filter<T>(predicate: (x: T) => boolean): (iterable: Iterable<T>) => IterableIterator<T>;
 export function filter<T>(predicate: (x: T) => boolean): (iterable: Iterable<T>) => IterableIterator<T> {
 	return function*(iterable: Iterable<T>) {
 		for (const x of iterable) {
@@ -71,6 +81,12 @@ export function max(iterable: Iterable<number>): number {
 
 export function collectToArray<T>(iterable: Iterable<T>): T[] {
 	return [...iterable];
+}
+
+export function join(separator = '') {
+	return (iterable: Iterable<unknown>) => Array.isArray(iterable) ?
+		iterable.join(separator) :
+		[...iterable].join(separator);
 }
 
 export function fromEntries<T extends string | number, U>(iterable: Iterable<[T, U]>): Record<T, U> {
@@ -131,9 +147,28 @@ export function takeWhile<T>(predicate: (x: T) => boolean) {
 		const iterator = iterable[Symbol.iterator]();
 		while (true) {
 			const { value, done } = iterator.next();
-			if (!done && predicate(value)) {
-				yield value;
+
+			if (done || !predicate(value)) {
+				return;
 			}
+
+			yield value;
+		}
+	}
+}
+
+export function skipWhile<T>(predicate: (x: T) => boolean) {
+	return function*(iterable: Iterable<T>): IterableIterator<T> {
+		const iterator = iterable[Symbol.iterator]();
+		while (true) {
+			const { value, done } = iterator.next();
+			if (done) return;
+			if (!predicate(value)) break;
+		}
+		while (true) {
+			const { value, done } = iterator.next();
+			if (done) return;
+			yield value;
 		}
 	}
 }
