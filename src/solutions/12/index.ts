@@ -1,3 +1,4 @@
+import { log } from "../../lib";
 import { pipe } from "../../lib/fp";
 import { collectToArray, map, reduce } from "../../lib/fp/generators";
 import { readLinesFromStdin } from "../../lib/fs";
@@ -30,14 +31,14 @@ pipe(
 	reduce(step(moveShip), { position: [0, 0], direction: directions['E'] }),
 	state => state.position,
 	manhattanDistance([0, 0]),
-	x => console.log('Part 1:', x),
+	log('Part 1:'),
 )(commands);
 
 pipe(
 	reduce(step(moveWaypoint), { position: [0, 0], direction: [10, 1] }),
 	state => state.position,
 	manhattanDistance([0, 0]),
-	x => console.log('Part 2:', x),
+	log('Part 2:'),
 )(commands);
 
 function step(translateFn: (state: FerryState, direction: Direction, value: number) => FerryState) {

@@ -54,6 +54,8 @@ export function filter<T>(predicate: (x: T) => boolean): (iterable: Iterable<T>)
 	};
 }
 
+export function reduce<T>(fn: (acc: T, x: T) => T): (iterable: Iterable<T>) => T;
+export function reduce<T, U>(fn: (acc: U, x: T) => U, initial: U): (iterable: Iterable<T>) => U;
 export function reduce<T, U>(fn: (acc: U, x: T) => U, initial?: U): (iterable: Iterable<T>) => U {
 	return (iterable: Iterable<T>) => {
 		const iterator = iterable[Symbol.iterator]();
@@ -75,8 +77,12 @@ export const sum = reduce((x, y: number) => x + y, 0);
 
 export const product = reduce((x, y: number) => x * y, 1);
 
-export function max(iterable: Iterable<number>): number {
-	return Math.max(...iterable);
+export function min<T>(fn: (x: T) => number) {
+	return reduce((acc: T, x: T) => fn(x) < fn(acc) ? x : acc);
+}
+
+export function max<T>(fn: (x: T) => number) {
+	return reduce((acc: T, x: T) => fn(x) > fn(acc) ? x : acc);
 }
 
 export function collectToArray<T>(iterable: Iterable<T>): T[] {
@@ -135,9 +141,11 @@ export function take<T>(n: number) {
 		let i = 0;
 		while (true) {
 			const { value, done } = iterator.next();
-			if (!done && i++ < n) {
-				yield value;
+			if (done || i++ >= n) {
+				return;
 			}
+
+			yield value;
 		}
 	}
 }

@@ -11,7 +11,8 @@
 		"start:09": "npm run -s ts-node -- src/solutions/09/index.ts",
 		"start:10": "npm run -s ts-node -- src/solutions/10/index.ts",
 		"start:11": "npm run -s ts-node -- src/solutions/11/index.ts",
-		"start:12": "npm run -s ts-node -- src/solutions/12/index.ts"
+		"start:12": "npm run -s ts-node -- src/solutions/12/index.ts",
+		"start:13": "npm run -s ts-node -- src/solutions/13/index.ts"
 	},
 	"private": true,
 	"type": "module",
