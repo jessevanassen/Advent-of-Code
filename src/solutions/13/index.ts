@@ -1,6 +1,6 @@
 import { log } from '../../lib';
 import { pipe } from '../../lib/fp';
-import { collectToArray, filter, first, map, min, range, split } from '../../lib/fp/generators';
+import { collectToArray, filter, map, min, skip, split } from '../../lib/fp/generators';
 import { readLinesFromStdin } from '../../lib/fs';
 
 type Bus = number | 'x';
@@ -14,6 +14,24 @@ pipe(
 	([bus, nextDeparture]) => bus * (nextDeparture - departure),
 	log('Part 1:'),
 )(buses);
+
+const ranges: [number, number][] = pipe(
+	(buses: Bus[]) => buses.map((bus, index) => [bus, index]),
+	filter((busSchedule): busSchedule is [number, number] => notOutOfService(busSchedule[0])),
+	collectToArray,
+)(buses);
+
+let time = ranges[0][0];
+let factor = time;
+
+for (const [bus, offset] of skip(1)(ranges)) {
+	while ((time + offset) % bus !== 0) {
+		time += factor;
+	}
+	factor *= bus;
+}
+
+log('Part 2:')(time);
 
 function nextDeparture(timestamp: number, bus: number) {
 	return Math.ceil(timestamp / bus) * bus;
