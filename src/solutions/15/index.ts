@@ -24,20 +24,17 @@ pipe(
 
 
 function* game(seed: number[]): IterableIterator<number> {
-	const cache = seed
-		.reduce((acc, currentValue, currentIndex) => {
-			acc[currentValue] = currentIndex;
-			return acc;
-		}, {} as Record<number, number>);
+	const cache = new Map<number, number>(
+		seed.map((value, index) => [value, index]));
 
 	yield* seed;
 
 	let last = seed[seed.length - 1];
 
 	for (let turn = seed.length; ; turn++) {
-		const current = last in cache ? turn - 1 - cache[last] : 0;
+		const current = cache.has(last) ? turn - 1 - cache.get(last)! : 0;
 		yield current;
-		cache[last] = turn - 1;
+		cache.set(last, turn - 1);
 		last = current;
 	}
 }
