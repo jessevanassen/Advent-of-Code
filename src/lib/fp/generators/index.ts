@@ -196,7 +196,7 @@ export function* aperture<T>(iterable: Iterable<T>): IterableIterator<[T, T]> {
 }
 
 export function skip<T>(n: number) {
-	return function*(iterable: Iterable<T>) {
+	return function*(iterable: Iterable<T>): IterableIterator<T> {
 		if (Array.isArray(iterable)) {
 			for (let i = n; i < iterable.length; i++) {
 				yield iterable[i]
@@ -211,7 +211,6 @@ export function skip<T>(n: number) {
 
 		while (true) {
 			const { value, done } = iterator.next();
-			console.log(value, done);
 			if (done) break;
 			yield value;
 		}
