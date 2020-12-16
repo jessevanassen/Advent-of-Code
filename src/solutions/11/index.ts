@@ -1,5 +1,5 @@
 import { count, eq, not, pipe } from '../../lib/fp';
-import { aperture, collectToArray, filter, first, flatten, iterate, join, map, skipWhile, split, sum, takeWhile } from '../../lib/fp/generators';
+import { aperture, collectToArray, filter, first, flatten, iterate, map, skipWhile, split, sum, takeWhile } from '../../lib/fp/generators';
 import { readLinesFromStdin } from '../../lib/fs';
 
 type Vector = [number, number];
@@ -18,7 +18,7 @@ const grid: Grid = pipe(
 		collectToArray,
 	)),
 	collectToArray,
-)(readLinesFromStdin())
+)(readLinesFromStdin());
 
 console.log('Part 1:', pipe(evolveUntilStable(EvolutionFunction(countAdjacentOccupied, 4)), countOccupied)(grid));
 console.log('Part 2:', pipe(evolveUntilStable(EvolutionFunction(countVisibleOccupied, 5)), countOccupied)(grid));
@@ -31,8 +31,8 @@ function evolveUntilStable(fn: EvolutionFunction) {
 		aperture,
 		skipWhile(grids => !gridsEqual(...grids)),
 		first,
-		x => x![0]
-	)
+		x => x![0],
+	);
 }
 
 function evolve(fn: EvolutionFunction) {
@@ -46,7 +46,7 @@ function evolve(fn: EvolutionFunction) {
 			next.push(row);
 		}
 		return next;
-	}
+	};
 }
 
 function EvolutionFunction(adjacentFunction: (x: number, y: number, grid: Grid) => number, minimumOccupied: number) {
@@ -64,7 +64,7 @@ function EvolutionFunction(adjacentFunction: (x: number, y: number, grid: Grid) 
 			return 'L';
 
 		return position;
-	}
+	};
 }
 
 
@@ -121,16 +121,9 @@ function countOccupied(grid: Grid) {
 	)(grid);
 }
 
-function toString(grid: Grid): string {
-	return pipe(
-		map(join()),
-		join('\n')
-	)(grid);
-}
-
 function addVector(v1: Vector) {
 	return (v2: Vector): Vector => [
 		v1[0] + v2[0],
 		v1[1] + v2[1],
 	];
-};
+}

@@ -1,5 +1,8 @@
 {
 	"scripts": {
+		"typecheck": "tsc",
+		"lint": "eslint --ext \".js,.ts\" src/",
+		"test": "npm run typecheck && npm run lint",
 		"ts-node": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm",
 		"start:01": "npm run -s ts-node -- src/solutions/01/index.ts",
 		"start:02": "npm run -s ts-node -- src/solutions/02/index.ts",
@@ -21,6 +24,9 @@
 	"type": "module",
 	"devDependencies": {
 		"@types/node": "^14.14.10",
-		"ts-node": "^9.1.0"
+		"@typescript-eslint/eslint-plugin": "^4.10.0",
+		"@typescript-eslint/parser": "^4.10.0",
+		"ts-node": "^9.1.0",
+		"typescript": "^4.1.2"
 	}
 }

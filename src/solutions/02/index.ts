@@ -1,7 +1,7 @@
-import { isBetween } from "../../lib";
-import { count, eq, pipe, truthy } from "../../lib/fp";
-import { collectToArray, filter, map, split } from "../../lib/fp/generators";
-import { readLinesFromStdin } from "../../lib/fs";
+import { isBetween } from '../../lib';
+import { count, eq, pipe, truthy } from '../../lib/fp';
+import { collectToArray, filter, map, split } from '../../lib/fp/generators';
+import { readLinesFromStdin } from '../../lib/fs';
 
 const pattern = /^(\d+)-(\d+) ([a-z]): ([a-z]+)$/;
 
@@ -44,7 +44,7 @@ function PasswordPolicy([pos1, pos2, character, password]: string[]) {
 	return {
 		pos1: Number.parseInt(pos1),
 		pos2: Number.parseInt(pos2),
-		character, password
+		character, password,
 	};
 }
 
@@ -52,6 +52,6 @@ function match(pattern: RegExp) {
 	return (input: string) => input.match(pattern)?.slice(1);
 }
 
-function log(prefix: string = '') {
+function log(prefix = '') {
 	return (x: unknown) => console.log(`${prefix}${x}`);
 }

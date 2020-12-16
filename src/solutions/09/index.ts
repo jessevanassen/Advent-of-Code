@@ -7,7 +7,7 @@ const preambleSize = +process.argv[2];
 
 const input = pipe(
 	map(Number),
-	collectToArray
+	collectToArray,
 )(readLinesFromStdin());
 
 const invalidNumber = findInvalidNumber(preambleSize, input);

@@ -1,7 +1,7 @@
-import { log } from "../../lib";
-import { pipe } from "../../lib/fp";
-import { collectToArray, map, reduce } from "../../lib/fp/generators";
-import { readLinesFromStdin } from "../../lib/fs";
+import { log } from '../../lib';
+import { pipe } from '../../lib/fp';
+import { collectToArray, map, reduce } from '../../lib/fp/generators';
+import { readLinesFromStdin } from '../../lib/fs';
 
 type Vector = [number, number];
 
@@ -54,7 +54,7 @@ function step(translateFn: (state: FerryState, direction: Direction, value: numb
 			}
 			return {
 				position: state.position,
-				direction
+				direction,
 			};
 		}
 
@@ -73,14 +73,14 @@ function moveShip(state: FerryState, direction: Direction, value: number): Ferry
 	return {
 		position: add(state.position, multiplyScalar(directions[direction], value)),
 		direction: state.direction,
-	}
+	};
 }
 
 function moveWaypoint(state: FerryState, direction: Direction, value: number): FerryState {
 	return {
 		position: state.position,
 		direction: add(state.direction, multiplyScalar(directions[direction], value)),
-	}
+	};
 }
 
 function manhattanDistance(x: Vector) {

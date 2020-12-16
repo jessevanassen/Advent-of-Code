@@ -1,6 +1,6 @@
-import { not, pipe } from "../../lib/fp";
-import { collectToArray, filter, forEach, map } from "../../lib/fp/generators";
-import { readLinesFromStdin } from "../../lib/fs";
+import { not, pipe } from '../../lib/fp';
+import { collectToArray, filter, forEach, map } from '../../lib/fp/generators';
+import { readLinesFromStdin } from '../../lib/fs';
 
 type Operation = 'acc' | 'jmp' | 'nop';
 
@@ -30,7 +30,7 @@ pipe(
 	filter(not(isInfinite)),
 	map(run),
 	forEach(log('Part 2:')),
-)(program)
+)(program);
 
 
 function findAccumulatorValueBeforeInfiniteLoop(program: Program): number {
@@ -55,12 +55,12 @@ function* createMutations(program: Program): IterableIterator<Program> {
 	for (let i = 0; i < program.length; i++) {
 		const { operation, argument } = program[i];
 		switch (operation) {
-			case 'jmp':
-				yield replace(program, { operation: 'nop', argument }, i);
-				break;
-			case 'nop':
-				yield replace(program, { operation: 'nop', argument }, i);
-				break;
+		case 'jmp':
+			yield replace(program, { operation: 'nop', argument }, i);
+			break;
+		case 'nop':
+			yield replace(program, { operation: 'nop', argument }, i);
+			break;
 		}
 	}
 }
@@ -92,21 +92,21 @@ function evaluate(program: Program, { instructionPointer, accumulator }: Readonl
 	const { operation, argument } = program[instructionPointer];
 
 	switch (operation) {
-		case 'jmp':
-			return {
-				instructionPointer: instructionPointer + argument,
-				accumulator,
-			};
-		case 'acc':
-			return {
-				instructionPointer: instructionPointer + 1,
-				accumulator: accumulator + argument,
-			};
-		default:
-			return {
-				instructionPointer: instructionPointer + 1,
-				accumulator,
-			};
+	case 'jmp':
+		return {
+			instructionPointer: instructionPointer + argument,
+			accumulator,
+		};
+	case 'acc':
+		return {
+			instructionPointer: instructionPointer + 1,
+			accumulator: accumulator + argument,
+		};
+	default:
+		return {
+			instructionPointer: instructionPointer + 1,
+			accumulator,
+		};
 	}
 }
 

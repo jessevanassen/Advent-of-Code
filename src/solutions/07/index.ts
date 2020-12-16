@@ -24,8 +24,8 @@ function Rule(line: string): [string, Record<string, number>] {
 
 	return [
 		bag,
-		contains
-	]
+		contains,
+	];
 }
 
 /**

@@ -1,7 +1,7 @@
-import { isBetween } from "../../lib";
-import { mapObject, not, pipe } from "../../lib/fp";
-import { all, collectToArray, contains, entries, filter, flatten, fromEntries, map, reduce, skip, split, sum, transpose, zipWithIndex } from "../../lib/fp/generators";
-import { readFromStdin } from "../../lib/fs";
+import { isBetween } from '../../lib';
+import { mapObject, not, pipe } from '../../lib/fp';
+import { all, collectToArray, contains, entries, filter, flatten, fromEntries, map, reduce, skip, split, sum, transpose, zipWithIndex } from '../../lib/fp/generators';
+import { readFromStdin } from '../../lib/fs';
 
 type Range = [number, number];
 type Predicate<T> = (x: T) => boolean;
@@ -93,7 +93,7 @@ function parseInput(): Input {
 			() => ranges.matchAll(/(\d+)-(\d+)/g),
 			map((match: RegExpMatchArray): Range => [Number.parseInt(match[1]), Number.parseInt(match[2])]),
 			collectToArray,
-		)(null)
+		)(null);
 
 		return [key, parsedRanges];
 	};

@@ -1,5 +1,5 @@
 import { readLinesFromStdin } from '../../lib/fs';
-import { split, map, filter, collectToArray, product, range, } from '../../lib/fp/generators';
+import { split, map, filter, collectToArray, product, range } from '../../lib/fp/generators';
 import { eq, count, pipe, truthy } from '../../lib/fp';
 
 interface Slope {
@@ -18,7 +18,7 @@ const slopes: Slope[] = [
 ];
 
 const trees: Area = pipe(
-	filter(truthy),
+	filter<string>(truthy),
 	map(pipe(
 		split(),
 		map(eq('#')),

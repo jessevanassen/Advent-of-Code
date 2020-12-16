@@ -5,6 +5,7 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
 		"noEmit": true,
 		"types": ["node"],
 		"lib": ["ESNext"]

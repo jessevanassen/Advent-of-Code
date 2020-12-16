@@ -5,7 +5,7 @@ import { collectToArray, first, map, skip, split } from '../../lib/fp/generators
 const input: number[] = pipe(
 	split(','),
 	map(Number.parseInt),
-	collectToArray
+	collectToArray,
 )(process.argv[2]);
 
 pipe(

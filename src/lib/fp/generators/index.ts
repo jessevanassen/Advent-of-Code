@@ -11,7 +11,7 @@ export function iterate<T>(fn: (x: T) => T) {
 		while (true) {
 			yield seed = fn(seed);
 		}
-	}
+	};
 }
 
 export function map<T, U>(fn: (x: T) => U): (iterable: Iterable<T>) => IterableIterator<U> {
@@ -22,7 +22,7 @@ export function map<T, U>(fn: (x: T) => U): (iterable: Iterable<T>) => IterableI
 	};
 }
 
-export function* flatten<T>(iterable: Iterable<Iterable<T>>) {
+export function* flatten<T>(iterable: Iterable<Iterable<T>>): IterableIterator<T> {
 	for (const i of iterable) {
 		yield* i;
 	}
@@ -31,11 +31,11 @@ export function* flatten<T>(iterable: Iterable<Iterable<T>>) {
 export function flatMap<T, U>(fn: (x: T) => Iterable<U>): (iterable: Iterable<T>) => IterableIterator<U> {
 	return function(iterable: Iterable<T>) {
 		return flatten(map(fn)(iterable));
-	}
+	};
 }
 
 export function forEach<T>(fn: (x: T) => void) {
-	return (iterable: Iterable<T>) => {
+	return (iterable: Iterable<T>): void => {
 		for (const x of iterable) {
 			fn(x);
 		}
@@ -77,11 +77,11 @@ export const sum = reduce((x, y: number) => x + y, 0);
 
 export const product = reduce((x, y: number) => x * y, 1);
 
-export function min<T>(fn: (x: T) => number) {
+export function min<T>(fn: (x: T) => number): (iterable: Iterable<T>) => T {
 	return reduce((acc: T, x: T) => fn(x) < fn(acc) ? x : acc);
 }
 
-export function max<T>(fn: (x: T) => number) {
+export function max<T>(fn: (x: T) => number): (iterable: Iterable<T>) => T {
 	return reduce((acc: T, x: T) => fn(x) > fn(acc) ? x : acc);
 }
 
@@ -90,7 +90,7 @@ export function collectToArray<T>(iterable: Iterable<T>): T[] {
 }
 
 export function join(separator = '') {
-	return (iterable: Iterable<unknown>) => Array.isArray(iterable) ?
+	return (iterable: Iterable<unknown>): string => Array.isArray(iterable) ?
 		iterable.join(separator) :
 		[...iterable].join(separator);
 }
@@ -111,14 +111,14 @@ export function any<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
 			}
 		}
 		return false;
-	}
+	};
 }
 
 export function all<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
 	return not(any<T>(not(fn)));
 }
 
-export const contains = <T>(value: T) => any<T>(x => x == value);
+export const contains = <T>(value: T): (arg: Iterable<T>) => boolean => any<T>(x => x == value);
 
 export function split(separator = ''): (input: string) => IterableIterator<string> {
 	if (separator === '') {
@@ -149,7 +149,7 @@ export function take<T>(n: number) {
 
 			yield value;
 		}
-	}
+	};
 }
 
 export function takeWhile<T>(predicate: (x: T) => boolean) {
@@ -164,7 +164,7 @@ export function takeWhile<T>(predicate: (x: T) => boolean) {
 
 			yield value;
 		}
-	}
+	};
 }
 
 export function skipWhile<T>(predicate: (x: T) => boolean) {
@@ -180,7 +180,7 @@ export function skipWhile<T>(predicate: (x: T) => boolean) {
 			if (done) return;
 			yield value;
 		}
-	}
+	};
 }
 
 export function* aperture<T>(iterable: Iterable<T>): IterableIterator<[T, T]> {
@@ -197,11 +197,11 @@ export function* aperture<T>(iterable: Iterable<T>): IterableIterator<[T, T]> {
 	}
 }
 
-export function skip<T>(n: number) {
-	return function*(iterable: Iterable<T>): IterableIterator<T> {
+export function skip(n: number) {
+	return function*<T>(iterable: Iterable<T>): IterableIterator<T> {
 		if (Array.isArray(iterable)) {
 			for (let i = n; i < iterable.length; i++) {
-				yield iterable[i]
+				yield iterable[i];
 			}
 			return;
 		}
@@ -216,7 +216,7 @@ export function skip<T>(n: number) {
 			if (done) break;
 			yield value;
 		}
-	}
+	};
 }
 
 export function* transpose<T>(x: T[][]): IterableIterator<T[]> {

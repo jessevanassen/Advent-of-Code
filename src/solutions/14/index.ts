@@ -2,7 +2,7 @@ import { log } from '../../lib';
 import { sum } from '../../lib/fp/generators';
 import { readLinesFromStdin } from '../../lib/fs';
 
-enum CommandType { setMask, setValue };
+enum CommandType { setMask, setValue }
 
 interface SetMask {
 	type: CommandType.setMask;
@@ -45,7 +45,7 @@ function runPart1() {
 				memory: {
 					...acc.memory,
 					[command.address]: acc.mask(command.value),
-				}
+				},
 			};
 		}
 		return acc;
@@ -58,7 +58,7 @@ function runPart2() {
 			return { ...acc, mask: command.value };
 		}
 		if (command.type === CommandType.setValue) {
-			let memory = { ...acc.memory };
+			const memory = { ...acc.memory };
 			for (const address of combinations(acc.mask, command.address)) {
 				memory[address] = command.value;
 			}
@@ -77,7 +77,7 @@ function combinations(mask: string, address: number) {
 		}
 
 		if (mask.charAt(index) === 'X') {
-			yield* _sum(base + '0', index + 1)
+			yield* _sum(base + '0', index + 1);
 			yield* _sum(base + '1', index + 1);
 		} else if (mask.charAt(index) === '1') {
 			yield* _sum(base + '1', index + 1);
@@ -105,7 +105,7 @@ function Mask(bitmask: string): (input: number) => number {
 	const reverseMask = bitmask.split('').reverse();
 
 	return (input: number) => {
-		let bits = input.toString(2).padStart(36, '0').split('').reverse();
+		const bits = input.toString(2).padStart(36, '0').split('').reverse();
 		for (let i = 0; i < bits.length; i++) {
 			bits[i] = reverseMask[i] !== 'X' ? reverseMask[i] : bits[i];
 		}

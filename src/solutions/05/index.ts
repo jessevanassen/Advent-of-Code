@@ -1,13 +1,14 @@
-import { seatId } from './binary-boarding.js';
+import { seatId } from './binary-boarding';
 import { pipe, truthy } from '../../lib/fp';
 import { readLinesFromStdin } from '../../lib/fs/index.js';
 import { collectToArray, filter, map } from '../../lib/fp/generators/index.js';
 
-const seats = pipe(
+const seats: number[] = pipe(
+	() => readLinesFromStdin(),
 	filter(truthy),
 	map(seatId),
 	collectToArray,
-)(readLinesFromStdin());
+)(null);
 
 const min = Math.min(...seats),
 	max = Math.max(...seats);

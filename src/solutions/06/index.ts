@@ -12,7 +12,7 @@ const answers = pipe(
 			split(),
 			collectToArray,
 		)),
-		collectToArray
+		collectToArray,
 	)),
 	collectToArray,
 )(readFromStdin());
