@@ -42,6 +42,16 @@ export function reverseComparator<T>(comparator: Comparator<T>): Comparator<T> {
 	}
 };
 
+export function mapObject<T, U>(fn: (x: T) => U) {
+	return function<K extends string>(obj: Record<K, T>): Record<K, U> {
+		const result = {} as Record<string, U>;
+		for (let [key, value] of Object.entries<T>(obj)) {
+			result[key] = fn(value);
+		}
+		return result as Record<K, U>;
+	}
+}
+
 export function pipe<T0, T1>(...fns: [(x: T0) => T1]): (x: T0) => T1
 export function pipe<T0, T1, T2>(...fns: [(x: T0) => T1, (x: T1) => T2]): (x: T0) => T2
 export function pipe<T0, T1, T2, T3>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): (x: T0) => T3

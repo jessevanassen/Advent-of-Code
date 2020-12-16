@@ -118,6 +118,8 @@ export function all<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
 	return not(any<T>(not(fn)));
 }
 
+export const contains = <T>(value: T) => any<T>(x => x == value);
+
 export function split(separator = ''): (input: string) => IterableIterator<string> {
 	if (separator === '') {
 		return (input: string) => input[Symbol.iterator]();
@@ -214,5 +216,32 @@ export function skip<T>(n: number) {
 			if (done) break;
 			yield value;
 		}
+	}
+}
+
+export function* transpose<T>(x: T[][]): IterableIterator<T[]> {
+	if (x.length === 0) return;
+
+	for (let i = 0; i < x[0].length; i++) {
+		yield [...column(i, x)];
+	}
+}
+
+export function* column<T>(n: number, input: T[][]): IterableIterator<T> {
+	for (let i = 0; i < input.length; i++) {
+		yield input[i][n];
+	}
+}
+
+export function* zipWithIndex<T>(iterable: Iterable<T>): IterableIterator<[T, number]> {
+	let i = 0;
+	for (const item of iterable) {
+		yield [item, i++];
+	}
+}
+
+export function* entries<T, K extends string = string>(obj: Record<K, T>): IterableIterator<[K, T]> {
+	for (const key of Object.keys(obj) as K[]) {
+		yield [key, obj[key]];
 	}
 }

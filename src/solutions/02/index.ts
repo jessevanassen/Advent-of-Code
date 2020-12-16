@@ -1,3 +1,4 @@
+import { isBetween } from "../../lib";
 import { count, eq, pipe, truthy } from "../../lib/fp";
 import { collectToArray, filter, map, split } from "../../lib/fp/generators";
 import { readLinesFromStdin } from "../../lib/fs";
@@ -49,10 +50,6 @@ function PasswordPolicy([pos1, pos2, character, password]: string[]) {
 
 function match(pattern: RegExp) {
 	return (input: string) => input.match(pattern)?.slice(1);
-}
-
-function isBetween(start: number, endInclusive: number) {
-	return (n: number) => start <= n && n <= endInclusive;
 }
 
 function log(prefix: string = '') {

@@ -5,6 +5,8 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"allowJs": true,
-		"noEmit": true
+		"noEmit": true,
+		"types": ["node"],
+		"lib": ["ESNext"]
 	}
 }

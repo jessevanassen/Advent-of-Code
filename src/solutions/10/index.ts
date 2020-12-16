@@ -1,4 +1,4 @@
-import { log } from '../../lib';
+import { isBetween, log } from '../../lib';
 import { inspect, numberComparator, pipe, sort } from '../../lib/fp';
 import { aperture, collectToArray, map, product, reduce, skip, sum, takeWhile } from '../../lib/fp/generators';
 import { readLinesFromStdin } from '../../lib/fs';
@@ -46,8 +46,4 @@ function possibleArrangements(adapters: number[]): number {
 
 function adapterCompatibleWith(joltage: number) {
 	return isBetween(joltage + 1, joltage + 3);
-}
-
-function isBetween(min: number, max: number) {
-	return (input: number) => min <= input && input <= max;
 }

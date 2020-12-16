@@ -10,6 +10,10 @@ export function* combinations2<T>(input: T[]): IterableIterator<T[]> {
 	}
 }
 
+export function isBetween(start: number, endInclusive: number) {
+	return (n: number) => start <= n && n <= endInclusive;
+}
+
 export function log(prefix?: string) {
 	return (...x: unknown[]) => prefix ? console.log(prefix, ...x) : console.log(...x);
 }
