@@ -1,7 +1,7 @@
-import { log } from "../../lib";
-import { count, eq, pipe } from "../../lib/fp";
-import { filter, fromEntries, join, map, split } from "../../lib/fp/generators";
-import { readFromStdin } from "../../lib/fs";
+import { log } from '../../lib';
+import { count, pipe } from '../../lib/fp';
+import { filter, fromEntries, join, map, split } from '../../lib/fp/generators';
+import { readFromStdin } from '../../lib/fs';
 
 const [ruleInput, input] = readFromStdin().split('\n\n');
 
@@ -48,7 +48,7 @@ function Validator(ruleInput: string, variant: Variant): Predicate<string> {
 				group,
 			)),
 			join('|'),
-			group
+			group,
 		)(rule);
 	}
 
@@ -64,10 +64,10 @@ function Validator(ruleInput: string, variant: Variant): Predicate<string> {
 		const rule11 = (depth: number): string => depth > 0 ?
 			`(?:${getRule('42')}${rule11(depth - 1)}${getRule('31')})*` :
 			'';
-		pattern = `^` +
+		pattern = '^' +
 			`${getRule('42')}+` +
 			`(?:${rule11(25).slice(0, -1)})` +
-			`$`;
+			'$';
 	}
 
 	return x => new RegExp(pattern).test(x);

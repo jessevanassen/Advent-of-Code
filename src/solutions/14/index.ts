@@ -1,6 +1,6 @@
 import { log } from '../../lib';
 import { sum } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 enum CommandType { setMask, setValue }
 
@@ -90,7 +90,7 @@ function combinations(mask: string, address: number) {
 }
 
 function* parseInput(): IterableIterator<Command> {
-	for (const line of readLinesFromStdin()) {
+	for (const line of readBlocksFromStdin()) {
 		if (line.startsWith('mask = ')) {
 			yield { type: CommandType.setMask, value: line.substring('mask = '.length) };
 			continue;

@@ -1,7 +1,7 @@
 import { log } from '../../lib';
 import { pipe } from '../../lib/fp';
 import { collectToArray, map, reduce } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 type Vector = [number, number];
 
@@ -25,7 +25,7 @@ interface FerryState {
 	direction: Vector;
 }
 
-const commands: Command[] = pipe(map(parseCommand), collectToArray)(readLinesFromStdin());
+const commands: Command[] = pipe(map(parseCommand), collectToArray)(readBlocksFromStdin());
 
 pipe(
 	reduce(step(moveShip), { position: [0, 0], direction: directions['E'] }),

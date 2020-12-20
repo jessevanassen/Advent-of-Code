@@ -1,12 +1,12 @@
 import { isBetween, log } from '../../lib';
 import { numberComparator, pipe, sort } from '../../lib/fp';
 import { aperture, map, product, reduce } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const inputs: number[] = pipe(
 	map(Number),
 	sort(numberComparator),
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 const deviceRating = inputs[inputs.length - 1] + 3;
 

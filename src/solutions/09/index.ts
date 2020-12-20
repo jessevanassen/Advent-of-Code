@@ -1,14 +1,14 @@
 import { combinations2 } from '../../lib';
 import { eq, pipe } from '../../lib/fp';
 import { any, collectToArray, map, range, sum } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const preambleSize = +process.argv[2];
 
 const input = pipe(
 	map(Number),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 const invalidNumber = findInvalidNumber(preambleSize, input);
 console.log('Part 1:', invalidNumber);

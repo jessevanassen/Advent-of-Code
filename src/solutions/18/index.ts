@@ -1,7 +1,7 @@
 import { log } from '../../lib';
 import { pipe } from '../../lib/fp';
 import { collectToArray, map, sum } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 type Operator = '+' | '*';
 type Token = Operator | '(' | ')' | number;
@@ -11,7 +11,7 @@ type Expression = BinaryOperation | number;
 const tokens = pipe(
 	map(tokenize),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 pipe(
 	map(parseExpressionSamePrecedence),

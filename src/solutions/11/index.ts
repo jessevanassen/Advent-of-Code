@@ -1,6 +1,6 @@
 import { count, eq, not, pipe } from '../../lib/fp';
 import { aperture, collectToArray, filter, first, flatten, iterate, map, skipWhile, split, sum, takeWhile } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 type Vector = [number, number];
 const directions: Vector[] = [
@@ -18,7 +18,7 @@ const grid: Grid = pipe(
 		collectToArray,
 	)),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 console.log('Part 1:', pipe(evolveUntilStable(EvolutionFunction(countAdjacentOccupied, 4)), countOccupied)(grid));
 console.log('Part 2:', pipe(evolveUntilStable(EvolutionFunction(countVisibleOccupied, 5)), countOccupied)(grid));

@@ -1,12 +1,12 @@
 import { combinations2 } from '../../lib';
 import { pipe } from '../../lib/fp';
 import { collectToArray, filter, first, map } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const expenses = pipe(
 	map(Number),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 const expenseReport: (combinations: Iterable<number[]>) => number | undefined = pipe(
 	filter(x => add(...x) === 2020),

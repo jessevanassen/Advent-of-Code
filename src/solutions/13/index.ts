@@ -1,7 +1,7 @@
 import { log } from '../../lib';
 import { pipe } from '../../lib/fp';
 import { collectToArray, filter, map, min, skip, split } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 type Bus = number | 'x';
 
@@ -42,7 +42,7 @@ function notOutOfService(bus: Bus): bus is Exclude<Bus, 'x'> {
 }
 
 function parseInput() {
-	const [firstLine, secondLine] = [...readLinesFromStdin()];
+	const [firstLine, secondLine] = [...readBlocksFromStdin()];
 	const departure = Number.parseInt(firstLine);
 	const buses: Bus[] = pipe(
 		split(','),

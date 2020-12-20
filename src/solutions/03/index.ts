@@ -1,4 +1,4 @@
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 import { split, map, filter, collectToArray, product, range } from '../../lib/fp/generators';
 import { eq, count, pipe, truthy } from '../../lib/fp';
 
@@ -25,7 +25,7 @@ const trees: Area = pipe(
 		collectToArray,
 	)),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 const treeCountsOfSlopes = pipe(
 	map(treeCount(trees)),

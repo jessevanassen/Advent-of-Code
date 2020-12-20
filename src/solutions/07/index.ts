@@ -1,6 +1,6 @@
 import { count, pipe } from '../../lib/fp';
 import { collectToArray, filter, fromEntries, map, sum } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const SHINY_GOLD = 'shiny gold';
 
@@ -9,7 +9,7 @@ type BagRules = Record<string, Record<string, number>>;
 const bagRules: BagRules = pipe(
 	map(Rule),
 	fromEntries,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 console.log('Part 1:', count(canContainShinyBag(bagRules)));
 console.log('Part 2:', bagContainsCount(bagRules, SHINY_GOLD));

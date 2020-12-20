@@ -1,6 +1,6 @@
 import { not, pipe } from '../../lib/fp';
 import { collectToArray, filter, forEach, map } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 type Operation = 'acc' | 'jmp' | 'nop';
 
@@ -21,7 +21,7 @@ const InitialState = (): ProgramState => ({ instructionPointer: 0, accumulator: 
 const program: Program = pipe(
 	map(parseInstruction),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 console.log('Part 1:', findAccumulatorValueBeforeInfiniteLoop(program));
 

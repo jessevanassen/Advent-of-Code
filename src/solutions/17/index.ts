@@ -1,6 +1,6 @@
 import { count, pipe } from '../../lib/fp';
 import { filter, map, range, reduce, zipWithIndex } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 import { addScalar, equals, fromString, max, min, toString, Vector4 } from '../../lib/vector/vector4';
 
 const initialSpace: Set<string> = parseInput();
@@ -33,7 +33,7 @@ function evolve(space: Set<string>, clampW: boolean): Set<string> {
 
 function parseInput(): Set<string> {
 	const result = new Set<string>();
-	for (const [row, y] of zipWithIndex(readLinesFromStdin())) {
+	for (const [row, y] of zipWithIndex(readBlocksFromStdin())) {
 		for (const [entry, x] of zipWithIndex(row)) {
 			if (entry === '#') {
 				result.add(toString([x, y, 0, 0]));

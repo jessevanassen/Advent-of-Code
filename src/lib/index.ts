@@ -17,3 +17,7 @@ export function isBetween(start: number, endInclusive: number) {
 export function log(prefix?: string) {
 	return (...x: unknown[]): void => prefix ? console.log(prefix, ...x) : console.log(...x);
 }
+
+export function remove<T>(index: number, array: T[]): T[] {
+	return [...array.slice(0, index), ...array.slice(index + 1)];
+}

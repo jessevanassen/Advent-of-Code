@@ -1,7 +1,7 @@
 import { isBetween } from '../../lib';
 import { count, eq, pipe, truthy } from '../../lib/fp';
 import { collectToArray, filter, map, split } from '../../lib/fp/generators';
-import { readLinesFromStdin } from '../../lib/fs';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const pattern = /^(\d+)-(\d+) ([a-z]): ([a-z]+)$/;
 
@@ -10,7 +10,7 @@ const passwords = pipe(
 	filter(truthy),
 	map(PasswordPolicy),
 	collectToArray,
-)(readLinesFromStdin());
+)(readBlocksFromStdin());
 
 
 pipe(

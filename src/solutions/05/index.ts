@@ -1,10 +1,10 @@
 import { seatId } from './binary-boarding';
 import { pipe, truthy } from '../../lib/fp';
-import { readLinesFromStdin } from '../../lib/fs/index.js';
+import { readBlocksFromStdin } from '../../lib/fs/index.js';
 import { collectToArray, filter, map } from '../../lib/fp/generators/index.js';
 
 const seats: number[] = pipe(
-	() => readLinesFromStdin(),
+	() => readBlocksFromStdin(),
 	filter(truthy),
 	map(seatId),
 	collectToArray,
