@@ -1,7 +1,7 @@
-import { remove } from "../../lib";
-import { pipe } from "../../lib/fp";
-import { collectToArray, flatMap, map, range, zipWithIndex } from "../../lib/fp/generators";
-import { readBlocksFromStdin } from "../../lib/fs";
+import { remove } from '../../lib';
+import { pipe } from '../../lib/fp';
+import { collectToArray, map, range, zipWithIndex } from '../../lib/fp/generators';
+import { readBlocksFromStdin } from '../../lib/fs';
 
 const SIZE = 10;
 
@@ -19,38 +19,42 @@ interface TileBorders {
 
 const tiles = parseTiles();
 
-for (const possibleGrid of possibleGrids(tiles)) {
+const configurations = validConfigurations(tiles);
+{
 	const size = imageSize(tiles);
-	console.log("Part 1:", possibleGrid[0][1] * possibleGrid[size - 1][1] * possibleGrid[tiles.length - size][1] * possibleGrid[tiles.length - 1][1]);
+	console.log('Part 1:', configurations[0][0].id * configurations[0][size - 1].id * configurations[0][tiles.length - size].id * configurations[0][tiles.length - 1].id);
 }
 
-type TileConfiguration = [TileBorders, number];
-function possibleGrids(tiles: Tile[]): TileConfiguration[][] {
+function validConfigurations(tiles: Tile[]): Tile[][] {
 	const size = imageSize(tiles);
-	const tileBorderVariants = tiles
-		.reduce((acc, tile) => {
-			acc[tile.id] = variants(TileBorders(tile));
-			return acc;
-		}, {} as { [id: number]: TileBorders[] });
 
-	function _possibleGrids(deck: Tile[], acc: TileConfiguration[]): TileConfiguration[][] {
+	const tileVariants = new Map<Tile, Tile[]>(
+		tiles.map(tile => [tile, variants(tile)]));
+	const variantBorders = new Map<Tile, TileBorders>();
+	for (const variants of tileVariants.values()) {
+		for (const variant of variants) {
+			variantBorders.set(variant, borders(variant));
+		}
+	}
+
+	function _possibleGrids(deck: Tile[], acc: Tile[]): Tile[][] {
 		if (deck.length === 0) {
 			return [acc];
 		}
 
-
 		const x = acc.length % size,
 			y = ~~(acc.length / size);
 
-		const result: TileConfiguration[][] = [];
+		const result: Tile[][] = [];
 
 		for (const [next, tileIndex] of zipWithIndex(deck)) {
-			for (const nextConfiguration of tileBorderVariants[next.id]) {
+			for (const nextConfiguration of tileVariants.get(next)!) {
+				const { left, top } = variantBorders.get(nextConfiguration)!;
 				if (
-					(x === 0 || nextConfiguration.left === acc[y * size + (x - 1)][0].right) &&
-					(y === 0 || nextConfiguration.top ===  acc[(y - 1) * size + x][0].bottom)
+					(x === 0 || left === variantBorders.get((acc[y * size + (x - 1)]))!.right) &&
+					(y === 0 || top ===  variantBorders.get((acc[(y - 1) * size + x]))!.bottom)
 				) {
-					result.push(..._possibleGrids(remove(tileIndex, deck), [...acc, [nextConfiguration, next.id]]));
+					result.push(..._possibleGrids(remove(tileIndex, deck), [...acc, nextConfiguration]));
 				}
 			}
 		}
@@ -85,7 +89,7 @@ function parseTiles(): Tile[] {
 	}
 }
 
-function TileBorders(tile: Tile): TileBorders {
+function borders(tile: Tile): TileBorders {
 	const indices = [...range(SIZE)];
 
 	return {
@@ -93,15 +97,15 @@ function TileBorders(tile: Tile): TileBorders {
 		right: toNumber(indices.map(y => tile.get(SIZE - 1, y))),
 		bottom: toNumber(indices.map(x => tile.get(x, SIZE - 1))),
 		left: toNumber(indices.map(y => tile.get(0, y))),
-	}
+	};
 
 	function toNumber(bools: boolean[]): number {
 		return bools.reduce((acc, x) => acc << 1 | Number(x), 0);
 	}
 }
 
-function variants(tileBorders: TileBorders): TileBorders[] {
-	const result = [tileBorders, flipHorizontal(tileBorders)];
+function variants(tile: Tile): Tile[] {
+	const result = [tile, flipHorizontal(tile)];
 	for (let _ = 0; _ < 3; _++) {
 		result.push(rotateCW(result[result.length - 2]));
 		result.push(rotateCW(result[result.length - 2]));
@@ -109,43 +113,27 @@ function variants(tileBorders: TileBorders): TileBorders[] {
 	return result;
 }
 
-function rotateCW(tileBorders: TileBorders): TileBorders {
+function rotateCW({ id, get }: Tile): Tile {
 	return {
-		top: reverse(tileBorders.left),
-		right: tileBorders.top,
-		bottom: reverse(tileBorders.right),
-		left: tileBorders.bottom,
-	}
+		get(x, y) {
+			const h = ((SIZE - 1) / 2);
+			const _x = (y - h) * -1 + h;
+			const _y = (x - h) + h;
+			return get(_x, _y);
+		},
+		id,
+	};
 }
 
-function flipHorizontal(tileBorders: TileBorders): TileBorders {
+function flipHorizontal({ id, get }: Tile): Tile {
 	return {
-		top: reverse(tileBorders.top),
-		right: tileBorders.left,
-		bottom: reverse(tileBorders.bottom),
-		left: tileBorders.right,
-	}
-}
-
-function reverse(number: number): number {
-	let out = 0;
-	for (let i = 0; i < SIZE; i++) {
-		out = (out << 1) | ((number >> i) & 1);
-	}
-	return out;
+		get(x, y) {
+			return get(SIZE - 1 - x, y);
+		},
+		id,
+	};
 }
 
 function imageSize(tiles: Tile[]): number {
 	return Math.sqrt(tiles.length);
-}
-
-function toString(tile: Tile): string {
-	const rows: string[] = [];
-	for (let y = 0; y < SIZE; y++) {
-		rows.push('');
-		for (let x = 0; x < SIZE; x++) {
-			rows[y] = rows[y] + (tile.get(x, y) ? '#' : '.');
-		}
-	}
-	return `Tile ${tile.id}:\n${rows.join('\n')}`;
 }
