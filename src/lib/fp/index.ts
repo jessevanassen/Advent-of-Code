@@ -54,16 +54,30 @@ export function mapObject<T, U>(fn: (x: T) => U) {
 	};
 }
 
-export function pipe<T0, T1>(...fns: [(x: T0) => T1]): (x: T0) => T1
-export function pipe<T0, T1, T2>(...fns: [(x: T0) => T1, (x: T1) => T2]): (x: T0) => T2
-export function pipe<T0, T1, T2, T3>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): (x: T0) => T3
-export function pipe<T0, T1, T2, T3, T4>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4]): (x: T0) => T4
-export function pipe<T0, T1, T2, T3, T4, T5>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5]): (x: T0) => T5
-export function pipe<T0, T1, T2, T3, T4, T5, T6>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6]): (x: T0) => T6
-export function pipe<T0, T1, T2, T3, T4, T5, T6, T7>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7]): (x: T0) => T7
-export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8]): (x: T0) => T8
-export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9]): (x: T0) => T9
-export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9, (x: T9) => T10]): (x: T0) => T10
+export function pipe<T0, T1>(...fns: [(x: T0) => T1]): (x: T0) => T1;
+export function pipe<T0, T1, T2>(...fns: [(x: T0) => T1, (x: T1) => T2]): (x: T0) => T2;
+export function pipe<T0, T1, T2, T3>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): (x: T0) => T3;
+export function pipe<T0, T1, T2, T3, T4>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4]): (x: T0) => T4;
+export function pipe<T0, T1, T2, T3, T4, T5>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5]): (x: T0) => T5;
+export function pipe<T0, T1, T2, T3, T4, T5, T6>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6]): (x: T0) => T6;
+export function pipe<T0, T1, T2, T3, T4, T5, T6, T7>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7]): (x: T0) => T7;
+export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8]): (x: T0) => T8;
+export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9]): (x: T0) => T9;
+export function pipe<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9, (x: T9) => T10]): (x: T0) => T10;
 export function pipe(...fns: ((x: unknown) => unknown)[]) {
 	return (x: unknown): unknown => fns.reduce((acc, fn) => fn(acc), x);
+}
+
+export function pipeline<T0, T1>(value: T0, ...fns: [(x: T0) => T1]): T1;
+export function pipeline<T0, T1, T2>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2]): T2;
+export function pipeline<T0, T1, T2, T3>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3]): T3;
+export function pipeline<T0, T1, T2, T3, T4>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4]): T4;
+export function pipeline<T0, T1, T2, T3, T4, T5>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5]): T5;
+export function pipeline<T0, T1, T2, T3, T4, T5, T6>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6]): T6;
+export function pipeline<T0, T1, T2, T3, T4, T5, T6, T7>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7]): T7;
+export function pipeline<T0, T1, T2, T3, T4, T5, T6, T7, T8>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8]): T8;
+export function pipeline<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9]): T9;
+export function pipeline<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(value: T0, ...fns: [(x: T0) => T1, (x: T1) => T2, (x: T2) => T3, (x: T3) => T4, (x: T4) => T5, (x: T5) => T6, (x: T6) => T7, (x: T7) => T8, (x: T8) => T9, (x: T9) => T10]): T10;
+export function pipeline(value: unknown, ...fns: ((x: unknown) => unknown)[]): unknown {
+	return fns.reduce((acc, fn) => fn(acc), value);
 }
