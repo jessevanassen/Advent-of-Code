@@ -103,6 +103,14 @@ export function first<T>(iterable: Iterable<T>): T | undefined {
 	return iterable[Symbol.iterator]().next().value;
 }
 
+export function last<T>(iterable: Iterable<T>): T | undefined {
+	let last: T | undefined;
+	for (const value of iterable) {
+		last = value;
+	}
+	return last;
+}
+
 export function any<T>(fn = (x: T) => !!x): (iterable: Iterable<T>) => boolean {
 	return iterable => {
 		for (const i of iterable) {
