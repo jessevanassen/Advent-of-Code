@@ -21,3 +21,7 @@ export function log(prefix?: string) {
 export function remove<T>(index: number, array: T[]): T[] {
 	return [...array.slice(0, index), ...array.slice(index + 1)];
 }
+
+export function modulo(divident: number, divider: number): number {
+	return ((divident % divider) + divider) % divider;
+}
