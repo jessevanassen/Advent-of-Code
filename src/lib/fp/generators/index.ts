@@ -181,7 +181,10 @@ export function skipWhile<T>(predicate: (x: T) => boolean) {
 		while (true) {
 			const { value, done } = iterator.next();
 			if (done) return;
-			if (!predicate(value)) break;
+			if (!predicate(value)){
+				yield value;
+				break;
+			}
 		}
 		while (true) {
 			const { value, done } = iterator.next();
