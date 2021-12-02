@@ -2,7 +2,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"01": "node ./src/01/main.js"
+		"01": "node ./src/01/main.js",
+		"02": "node ./src/02/main.js"
 	},
 	"dependencies": {
 		"ramda": "^0.27.1"
