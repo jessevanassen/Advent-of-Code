@@ -1,4 +1,4 @@
-import { readBlocksFromStdin } from '../fs.js';
+import { readBlocksFromStdin } from '../lib/index.js';
 import { aperture, filter, length, map, pipe, sum } from 'ramda'
 
 const input = map(Number, [...readBlocksFromStdin()]);

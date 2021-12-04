@@ -1,4 +1,4 @@
-import { readBlocksFromStdin } from '../fs.js';
+import { readBlocksFromStdin } from '../lib/index.js';
 
 const instructions = [...readBlocksFromStdin()].map(parseInstruction);
 

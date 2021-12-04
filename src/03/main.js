@@ -1,5 +1,5 @@
 import { join, map, pipe, transpose } from 'ramda';
-import { readBlocksFromStdin } from '../fs.js';
+import { readBlocksFromStdin } from '../lib/index.js';
 
 const report = [...readBlocksFromStdin()]
 	.map(row => row.split('').map(Number));
