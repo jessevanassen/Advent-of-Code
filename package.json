@@ -6,7 +6,8 @@
 		"02": "node ./src/02/main.js",
 		"03": "node ./src/03/main.js",
 		"04": "node ./src/04/main.js",
-		"05": "node ./src/05/main.js"
+		"05": "node ./src/05/main.js",
+		"06": "node ./src/06/main.js"
 	},
 	"dependencies": {
 		"ramda": "^0.27.1"
