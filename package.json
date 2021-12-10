@@ -11,7 +11,8 @@
 		"07": "node ./src/07/main.js",
 		"08": "node ./src/08/main.js",
 		"09": "node ./src/09/main.js",
-		"10": "node ./src/10/main.js"
+		"10": "node ./src/10/main.js",
+		"11": "node ./src/11/main.js"
 	},
 	"dependencies": {
 		"ramda": "^0.27.1"
