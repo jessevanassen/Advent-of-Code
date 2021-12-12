@@ -74,7 +74,7 @@ export function findIndex(predicate, iterable) {
  * @param {U} initial
  * @returns {U}
  */
-export function fold(accumulator, iterable, initial) {
+export function fold(accumulator, initial, iterable) {
 	for (const item of iterable) {
 		initial = accumulator(initial, item);
 	}
@@ -160,9 +160,16 @@ export function nth(n, iterable) {
 
 /**
  * @template T
- * @param {IterableIterator<T>} iterable
+ * @param {Iterable<T>} iterable
  * @returns {T[]}
  */
 export function collect(iterable) {
 	return [...iterable];
+}
+
+/**
+ * @param {Iterable<unknown>} iterable
+ */
+export function count(iterable) {
+	return fold(x => x + 1, 0, iterable);
 }
