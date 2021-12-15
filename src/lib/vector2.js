@@ -17,6 +17,15 @@ Vector2.parse = function(string) {
 /**
  * @param {Vector2} v1
  * @param {Vector2} v2
+ * @returns {boolean}
+ */
+Vector2.equals = function(v1, v2) {
+	return v1.x === v2.x && v1.y === v2.y
+}
+
+/**
+ * @param {Vector2} v1
+ * @param {Vector2} v2
  * @returns {Vector2}
  */
 Vector2.add = function(v1, v2) {
