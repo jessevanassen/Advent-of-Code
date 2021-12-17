@@ -48,6 +48,19 @@ export function* filter(predicate, iterable) {
  * @template T
  * @param {(t: T) => boolean} predicate
  * @param {Iterable<T>} iterable
+ * @returns {IterableIterator<T>}
+ */
+ export function* takeWhile(predicate, iterable) {
+	for (const item of iterable) {
+		if (!predicate(item)) { return; }
+		yield item;
+	}
+}
+
+/**
+ * @template T
+ * @param {(t: T) => boolean} predicate
+ * @param {Iterable<T>} iterable
  * @returns {T}
  */
 export function find(predicate, iterable) {
