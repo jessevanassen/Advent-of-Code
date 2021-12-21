@@ -1,7 +1,8 @@
 /**
- * @param {{ from?: number; to: number; step?: number }} param0
+ * @param {{ from?: number; to?: number; step?: number }} [param0]
+ * @returns {IterableIterator<number>}
  */
-export function* range({ from = 0, to, step = 1 }) {
+export function* range({ from = 0, to = Number.MAX_VALUE, step = 1 } = {}) {
 	for (let i = from; i < to; i += step) {
 		yield i;
 	}
@@ -185,4 +186,19 @@ export function collect(iterable) {
  */
 export function count(iterable) {
 	return fold(x => x + 1, 0, iterable);
+}
+
+/**
+ * Infinitely cycles through items
+ *
+ * @template T
+ * @param {T[]} items
+ * @returns {IterableIterator<T>}
+ */
+export function* cycle(items) {
+	while (true) {
+		for (const item of items) {
+			yield item;
+		}
+	}
 }
