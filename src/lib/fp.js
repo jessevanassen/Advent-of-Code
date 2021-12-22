@@ -202,3 +202,30 @@ export function* cycle(items) {
 		}
 	}
 }
+
+/**
+ * @template T
+ * @param {T[]} items
+ * @returns {IterableIterator<[T, T]>}
+ */
+export function* combinations(items) {
+	for (let i = 0; i < items.length - 1; i++) {
+		for (let j = i + 1; j < items.length; j++) {
+			yield [items[i], items[j]];
+		}
+	}
+}
+
+/**
+ * @template T, U
+ * @param {T[]} xs
+ * @param {U[]} ys
+ * @returns {IterableIterator<[T, U]>}
+ */
+export function* permutations(xs, ys) {
+	for (const x of xs) {
+		for (const y of ys) {
+			yield [x, y];
+		}
+	}
+}

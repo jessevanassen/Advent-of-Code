@@ -20,6 +20,7 @@
 		"16": "node ./src/16/main.js",
 		"17": "node ./src/17/main.js",
 		"18": "node ./src/18/main.js",
+		"19": "node ./src/19/main.js",
 		"20": "node ./src/20/main.js",
 		"21": "node ./src/21/main.js"
 	},

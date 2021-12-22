@@ -8,6 +8,7 @@ import { DerivedKeyMap } from "./derived-key-map.js";
  *   has: (v: T) => boolean,
  *   size: number,
  *   values: () => Iterable<T>,
+ *   get: (v: T) => T,
  * }} DerivedKeySet
  */
 
@@ -26,5 +27,7 @@ export function DerivedKeySet(mapper) {
 		has: k => map.has(k),
 		get size() { return map.size; },
 		values: () => map.values(),
+
+		get: v => map.get(v),
 	};
 }
