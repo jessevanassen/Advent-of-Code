@@ -5,7 +5,7 @@ where
 	T: FromStr,
 {
 	stdin().lines()
-		.filter_map(|line| line.ok())
-		.filter_map(|line| line.parse().ok())
+		.flat_map(|line| line)
+		.flat_map(|line| line.parse())
 		.collect()
 }
