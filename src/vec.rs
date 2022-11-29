@@ -1,4 +1,4 @@
-use std::ops::{Add, Neg, Sub};
+use std::ops::{Add, AddAssign, Neg, Sub};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Default)]
 pub struct IVec2D(pub i32, pub i32);
@@ -42,6 +42,20 @@ impl Add for IVec2D {
 
 	fn add(self, rhs: Self) -> Self::Output {
 		IVec2D(self.0 + rhs.0, self.1 + rhs.1)
+	}
+}
+
+impl AddAssign for IVec2D {
+	fn add_assign(&mut self, rhs: Self) {
+		self.0 += rhs.0;
+		self.1 += rhs.1;
+	}
+}
+
+impl AddAssign<IVec2D> for &mut IVec2D {
+	fn add_assign(&mut self, rhs: IVec2D) {
+		self.0 += rhs.0;
+		self.1 += rhs.1;
 	}
 }
 

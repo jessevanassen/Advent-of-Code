@@ -35,7 +35,7 @@ fn move_rope(rope: &mut [IVec2D], direction: IVec2D) {
 		}
 	}
 
-	rope[0] = rope[0] + direction;
+	rope[0] += direction;
 
 	for i in 1..rope.len() {
 		rope[i] = next_tail_position(rope[i], rope[i - 1]);
