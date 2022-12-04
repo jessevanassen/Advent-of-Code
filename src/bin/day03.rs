@@ -41,7 +41,10 @@ fn main() {
 	fn sum_common_items(
 		rucksack_groups: impl Iterator<Item = impl Iterator<Item = Rucksack>>,
 	) -> u32 {
-		rucksack_groups.map(common_item).map(|x| x as u32).sum()
+		rucksack_groups
+			.map(common_item)
+			.map(|x| x as u32)
+			.sum()
 	}
 
 	let part1: u32 = split_compartments(&lines).map_self(sum_common_items);
@@ -88,7 +91,11 @@ fn split_compartments(
 	lines
 		.iter()
 		.map(|line| split_middle(line))
-		.map(|group| group.into_iter().map(|x| x.iter().collect()))
+		.map(|group| {
+			group
+				.into_iter()
+				.map(|x| x.iter().collect())
+		})
 }
 
 fn split_middle<T>(items: &[T]) -> [&[T]; 2] {
@@ -102,5 +109,9 @@ fn collect_by_groups(
 	lines
 		.chunks_exact(3)
 		.into_iter()
-		.map(|group| group.into_iter().map(|x| x.iter().collect()))
+		.map(|group| {
+			group
+				.into_iter()
+				.map(|x| x.iter().collect())
+		})
 }

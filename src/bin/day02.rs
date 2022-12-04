@@ -75,7 +75,10 @@ impl Add<Outcome> for Move {
 	type Output = Move;
 
 	fn add(self, rhs: Outcome) -> Self::Output {
-		(self as i8 + rhs as i8).rem_euclid(3).try_into().unwrap()
+		(self as i8 + rhs as i8)
+			.rem_euclid(3)
+			.try_into()
+			.unwrap()
 	}
 }
 
