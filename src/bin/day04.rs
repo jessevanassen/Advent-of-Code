@@ -3,22 +3,17 @@ use std::{io::stdin, ops::RangeInclusive};
 use aoc2022::range_utils::{contains, overlaps};
 
 fn main() {
-	let pairs = stdin()
+	let (part1, part2) = stdin()
 		.lines()
 		.flatten()
 		.map(|line| parse_pair(&line))
-		.collect::<Vec<_>>();
+		.fold((0, 0), |acc, pair| {
+			let contains = contains(&pair.0, &pair.1) || contains(&pair.1, &pair.0);
+			let overlaps = overlaps(&pair.0, &pair.1);
+			(acc.0 + contains as i32, acc.1 + overlaps as i32)
+		});
 
-	let part1 = pairs
-		.iter()
-		.filter(|(x, y)| contains(x, y) || contains(y, x))
-		.count();
 	println!("Part 1: {part1}");
-
-	let part2 = pairs
-		.iter()
-		.filter(|(x, y)| overlaps(x, y))
-		.count();
 	println!("Part 2: {part2}");
 }
 
