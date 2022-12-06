@@ -1,35 +1,8 @@
 use std::io::stdin;
 
-use aoc2022::extensions::Pipe;
+use aoc2022::{extensions::Pipe, BitSet};
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-struct Rucksack(u64);
-
-impl FromIterator<u8> for Rucksack {
-	fn from_iter<T: IntoIterator<Item = u8>>(iter: T) -> Self {
-		iter.into_iter().by_ref().collect()
-	}
-}
-
-impl<'a> FromIterator<&'a u8> for Rucksack {
-	fn from_iter<T: IntoIterator<Item = &'a u8>>(iter: T) -> Self {
-		let mut value = 0u64;
-		for item in iter {
-			value |= 1 << item;
-		}
-		Self(value)
-	}
-}
-
-impl Rucksack {
-	fn iter(&self) -> impl Iterator<Item = u8> + '_ {
-		(1..=(26 + 26)).filter(|priority| self.0 >> priority & 1 == 1)
-	}
-
-	fn intersection(&self, other: &Self) -> Self {
-		Self(self.0 & other.0)
-	}
-}
+type Rucksack = BitSet;
 
 fn main() {
 	let lines: Vec<Vec<u8>> = stdin()
