@@ -40,7 +40,9 @@ fn main() {
 	let mut part1_stacks = stacks.clone();
 	for &Move { from, to, count } in &moves {
 		for _ in 0..count {
-			let item = part1_stacks[from].pop().expect("Expected the stack to be non-empty");
+			let item = part1_stacks[from]
+				.pop()
+				.expect("Expected the stack to be non-empty");
 			part1_stacks[to].push(item);
 		}
 	}
