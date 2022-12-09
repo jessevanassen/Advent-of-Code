@@ -7,3 +7,5 @@ pub use grid2d::Grid2D;
 pub mod extensions;
 
 pub mod range_utils;
+
+pub mod vec;
