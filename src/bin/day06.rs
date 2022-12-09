@@ -22,8 +22,7 @@ fn main() {
 fn first_marker(checksum_size: usize, data: &[u8]) -> Option<usize> {
 	data.windows(checksum_size)
 		.enumerate()
-		.filter(|(_, window)| all_unique(*window))
-		.next()
+		.find(|(_, window)| all_unique(*window))
 		.map(|(index, _)| index + checksum_size)
 		.filter(|&index| index < data.len())
 }
@@ -35,7 +34,7 @@ fn all_unique<'a>(input: impl IntoIterator<Item = &'a u8>) -> bool {
 			return false;
 		}
 	}
-	return true;
+	true
 }
 
 #[cfg(test)]
@@ -44,12 +43,12 @@ mod tests {
 
 	#[test]
 	fn test_first_marker() {
-		assert_eq!(Some(4), first_marker(4, &vec![1, 2, 3, 4, 5]));
-		assert_eq!(Some(7), first_marker(4, &vec![1, 1, 1, 1, 2, 3, 4, 5]));
+		assert_eq!(Some(4), first_marker(4, &[1, 2, 3, 4, 5]));
+		assert_eq!(Some(7), first_marker(4, &[1, 1, 1, 1, 2, 3, 4, 5]));
 
-		assert_eq!(None, first_marker(4, &vec![1, 2]));
-		assert_eq!(None, first_marker(4, &vec![1, 2, 3, 4]));
-		assert_eq!(None, first_marker(4, &vec![1, 1, 1, 2, 3, 4]));
-		assert_eq!(None, first_marker(4, &vec![1, 2, 1, 2, 1, 2, 1, 2]));
+		assert_eq!(None, first_marker(4, &[1, 2]));
+		assert_eq!(None, first_marker(4, &[1, 2, 3, 4]));
+		assert_eq!(None, first_marker(4, &[1, 1, 1, 2, 3, 4]));
+		assert_eq!(None, first_marker(4, &[1, 2, 1, 2, 1, 2, 1, 2]));
 	}
 }

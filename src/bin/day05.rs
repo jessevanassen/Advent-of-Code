@@ -48,7 +48,7 @@ fn main() {
 	}
 	println!("Part 1: {}", format_stacks(&part1_stacks));
 
-	let mut part2_stacks = stacks.clone();
+	let mut part2_stacks = stacks;
 	for &Move { from, to, count } in &moves {
 		let from = &mut part2_stacks[from];
 		let mut popped = from.split_off(from.len() - count);
@@ -74,7 +74,7 @@ fn parse_input(
 			line.bytes()
 				.skip(1)
 				.step_by(4)
-				.map(|c| c.is_ascii_alphanumeric().then(|| c))
+				.map(|c| c.is_ascii_alphanumeric().then_some(c))
 				.collect::<Vec<_>>()
 		})
 		.collect::<Vec<_>>();

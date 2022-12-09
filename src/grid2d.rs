@@ -35,7 +35,7 @@ impl<T> Grid2D<T> {
 		(0..self.height()).flat_map(move |y| (0..self.width()).map(move |x| (x, y)))
 	}
 
-	pub fn enumerate<'a>(&'a self) -> impl Iterator<Item = (Coord, &'a T)> + 'a {
+	pub fn enumerate(&self) -> impl Iterator<Item = (Coord, &T)> {
 		self.indices()
 			.map(|index| (index, self.index(index)))
 	}

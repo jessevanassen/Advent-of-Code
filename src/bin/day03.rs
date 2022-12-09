@@ -82,9 +82,5 @@ fn collect_by_groups(
 	lines
 		.chunks_exact(3)
 		.into_iter()
-		.map(|group| {
-			group
-				.into_iter()
-				.map(|x| x.iter().collect())
-		})
+		.map(|group| group.iter().map(|x| x.iter().collect()))
 }

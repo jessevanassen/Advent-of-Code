@@ -36,7 +36,7 @@ fn main() {
 	);
 }
 
-fn directory_sizes<'a>(commands: impl IntoIterator<Item = Command>) -> Vec<FileSize> {
+fn directory_sizes(commands: impl IntoIterator<Item = Command>) -> Vec<FileSize> {
 	fn directory_sizes(
 		commands: &mut Peekable<impl Iterator<Item = Command>>,
 		acc: &mut Vec<FileSize>,
@@ -97,7 +97,7 @@ fn parse_commands(lines: impl IntoIterator<Item = String>) -> impl Iterator<Item
 
 				while let Some(entry) = lines.next_if(|l| !is_command(l)) {
 					let marker = entry
-						.split(" ")
+						.split(' ')
 						.next()
 						.expect("Expect ls entries to be separated by a space");
 					if marker != "dir" {

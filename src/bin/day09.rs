@@ -45,7 +45,7 @@ fn move_rope(rope: &mut [IVec2D], direction: IVec2D) {
 fn parse_input_line(line: impl AsRef<str>) -> impl Iterator<Item = IVec2D> {
 	let (direction, amount) = line
 		.as_ref()
-		.split_once(" ")
+		.split_once(' ')
 		.expect("Expected input to be in the '<direction> <amount>' format");
 	let direction = match direction {
 		"U" => IVec2D::UP,

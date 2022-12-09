@@ -19,7 +19,7 @@ impl BitSet {
 		let (i, bit) = BitSet::bit_value(value);
 		self.0[i] |= bit;
 
-		return true;
+		true
 	}
 
 	pub fn remove(&mut self, value: u8) -> bool {
@@ -30,15 +30,15 @@ impl BitSet {
 		let (i, bit) = BitSet::bit_value(value);
 		self.0[i] &= !bit;
 
-		return true;
+		true
 	}
 
 	pub fn union(&self, other: &Self) -> BitSet {
-		return BitSet([self.0[0] | other.0[0], self.0[1] | other.0[1]]);
+		BitSet([self.0[0] | other.0[0], self.0[1] | other.0[1]])
 	}
 
 	pub fn intersection(&self, other: &Self) -> BitSet {
-		return BitSet([self.0[0] & other.0[0], self.0[1] & other.0[1]]);
+		BitSet([self.0[0] & other.0[0], self.0[1] & other.0[1]])
 	}
 
 	fn bit_value(value: u8) -> (usize, u128) {
@@ -51,6 +51,10 @@ impl BitSet {
 
 	pub fn len(&self) -> u8 {
 		self.iter().count() as u8
+	}
+
+	pub fn is_empty(&self) -> bool {
+		self.len() == 0
 	}
 }
 

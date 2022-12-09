@@ -62,6 +62,7 @@ impl Add<Move> for Move {
 	type Output = Outcome;
 
 	fn add(self, rhs: Move) -> Self::Output {
+		#[allow(clippy::suspicious_arithmetic_impl)]
 		match (self as i8 - rhs as i8).rem_euclid(3) {
 			0 => Outcome::Draw,
 			1 => Outcome::Lose,
