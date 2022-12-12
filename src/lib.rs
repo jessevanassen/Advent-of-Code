@@ -1,5 +1,8 @@
-mod bitset;
-pub use bitset::BitSet;
+mod bit_set;
+pub use bit_set::BitSet;
+
+mod byte_set;
+pub use byte_set::ByteSet;
 
 mod grid2d;
 pub use grid2d::Grid2D;

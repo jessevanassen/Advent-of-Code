@@ -9,9 +9,8 @@ fn main() {
 	let forest: Forest = stdin()
 		.lines()
 		.flatten()
-		.map(|line| line.bytes().map(|b| b - b'0').collect())
-		.collect::<Vec<_>>()
-		.into();
+		.map(|line| line.into_bytes().into_iter().map(|b| b - b'0'))
+		.collect::<Forest>();
 
 	// All trees in the outer ring are visible
 	let mut visible_tree_count = (forest.width() + forest.height() - 2) * 2;

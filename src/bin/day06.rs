@@ -1,6 +1,6 @@
 use std::io::stdin;
 
-use aoc2022::BitSet;
+use aoc2022::ByteSet;
 
 fn main() {
 	let input = stdin().lines().next().unwrap().unwrap();
@@ -28,7 +28,7 @@ fn first_marker(checksum_size: usize, data: &[u8]) -> Option<usize> {
 }
 
 fn all_unique<'a>(input: impl IntoIterator<Item = &'a u8>) -> bool {
-	let mut bitset = BitSet::new();
+	let mut bitset = ByteSet::new();
 	for &item in input {
 		if !bitset.insert(item) {
 			return false;

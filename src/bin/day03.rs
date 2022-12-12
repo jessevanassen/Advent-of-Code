@@ -1,8 +1,8 @@
 use std::io::stdin;
 
-use aoc2022::{extensions::Pipe, BitSet};
+use aoc2022::{extensions::Pipe, ByteSet};
 
-type Rucksack = BitSet;
+type Rucksack = ByteSet;
 
 fn main() {
 	let lines: Vec<Vec<u8>> = stdin()

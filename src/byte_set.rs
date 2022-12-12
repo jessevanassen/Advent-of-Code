@@ -1,13 +1,14 @@
+/// A set for efficiently storing the values `0xff..=0xff`
 #[derive(Default, Debug, PartialEq, Eq, Hash, Clone, Copy)]
-pub struct BitSet([u128; 2]);
+pub struct ByteSet([u128; 2]);
 
-impl BitSet {
+impl ByteSet {
 	pub fn new() -> Self {
 		Self::default()
 	}
 
 	pub fn contains(&self, value: u8) -> bool {
-		let (i, bit) = BitSet::bit_value(value);
+		let (i, bit) = ByteSet::bit_value(value);
 		(self.0[i] & bit) > 0
 	}
 
@@ -16,7 +17,7 @@ impl BitSet {
 			return false;
 		}
 
-		let (i, bit) = BitSet::bit_value(value);
+		let (i, bit) = ByteSet::bit_value(value);
 		self.0[i] |= bit;
 
 		true
@@ -27,18 +28,18 @@ impl BitSet {
 			return false;
 		}
 
-		let (i, bit) = BitSet::bit_value(value);
+		let (i, bit) = ByteSet::bit_value(value);
 		self.0[i] &= !bit;
 
 		true
 	}
 
-	pub fn union(&self, other: &Self) -> BitSet {
-		BitSet([self.0[0] | other.0[0], self.0[1] | other.0[1]])
+	pub fn union(&self, other: &Self) -> ByteSet {
+		ByteSet([self.0[0] | other.0[0], self.0[1] | other.0[1]])
 	}
 
-	pub fn intersection(&self, other: &Self) -> BitSet {
-		BitSet([self.0[0] & other.0[0], self.0[1] & other.0[1]])
+	pub fn intersection(&self, other: &Self) -> ByteSet {
+		ByteSet([self.0[0] & other.0[0], self.0[1] & other.0[1]])
 	}
 
 	fn bit_value(value: u8) -> (usize, u128) {
@@ -50,7 +51,7 @@ impl BitSet {
 	}
 
 	pub fn len(&self) -> u8 {
-		self.iter().count() as u8
+		(self.0[0].count_ones() + self.0[1].count_ones()) as u8
 	}
 
 	pub fn is_empty(&self) -> bool {
@@ -58,9 +59,9 @@ impl BitSet {
 	}
 }
 
-impl FromIterator<u8> for BitSet {
+impl FromIterator<u8> for ByteSet {
 	fn from_iter<T: IntoIterator<Item = u8>>(iter: T) -> Self {
-		let mut set = BitSet::default();
+		let mut set = ByteSet::default();
 		for value in iter {
 			set.insert(value);
 		}
@@ -68,7 +69,7 @@ impl FromIterator<u8> for BitSet {
 	}
 }
 
-impl<'a> FromIterator<&'a u8> for BitSet {
+impl<'a> FromIterator<&'a u8> for ByteSet {
 	fn from_iter<T: IntoIterator<Item = &'a u8>>(iter: T) -> Self {
 		iter.into_iter().copied().collect()
 	}
@@ -76,11 +77,11 @@ impl<'a> FromIterator<&'a u8> for BitSet {
 
 #[cfg(test)]
 mod tests {
-	use super::BitSet;
+	use super::ByteSet;
 
 	#[test]
 	fn test_insert_and_remove() {
-		let mut set = BitSet::default();
+		let mut set = ByteSet::default();
 
 		assert!(!set.contains(0));
 		assert!(!set.contains(1));
@@ -109,7 +110,7 @@ mod tests {
 
 	#[test]
 	fn test_iter() {
-		let mut set = BitSet::default();
+		let mut set = ByteSet::default();
 
 		assert_eq!(0, set.len());
 
@@ -132,12 +133,12 @@ mod tests {
 	fn test_collect_to_bitset() {
 		// From u8
 		let input = vec![0, 2, 4, 8];
-		let set: BitSet = input.iter().copied().collect();
+		let set: ByteSet = input.iter().copied().collect();
 		assert_eq!(input, set.iter().collect::<Vec<_>>());
 
 		// From &u8
 		let input = vec![0, 2, 4, 8];
-		let set: BitSet = input.iter().collect();
+		let set: ByteSet = input.iter().collect();
 		assert_eq!(input, set.iter().collect::<Vec<_>>());
 	}
 }
