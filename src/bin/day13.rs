@@ -1,3 +1,5 @@
+use anyhow::anyhow;
+use aoc2022::propagate;
 use std::{cmp::Ordering, io::stdin, iter, str::FromStr};
 
 type PacketValue = u8;
@@ -9,19 +11,20 @@ enum Packet {
 }
 
 impl FromStr for Packet {
-	type Err = String;
+	type Err = anyhow::Error;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		use nom::{
 			branch::alt,
 			character::complete::{char, u8},
 			combinator::map,
+			error::VerboseError,
 			multi::separated_list0,
 			sequence::delimited,
 			Finish, IResult,
 		};
 
-		fn packet(s: &str) -> IResult<&str, Packet> {
+		fn packet(s: &str) -> IResult<&str, Packet, VerboseError<&str>> {
 			alt((
 				map(u8, Packet::Integer),
 				map(
@@ -34,7 +37,7 @@ impl FromStr for Packet {
 		packet(s)
 			.finish()
 			.map(|x| x.1)
-			.map_err(|err| err.to_string())
+			.map_err(|err| anyhow!(err.to_string()))
 	}
 }
 
@@ -61,8 +64,9 @@ impl PartialOrd for Packet {
 	}
 }
 
-fn main() {
-	let packet_pairs = parse_packet_pairs(stdin().lines().flatten()).collect::<Vec<_>>();
+fn main() -> anyhow::Result<()> {
+	let packet_pairs =
+		parse_packet_pairs(stdin().lines().flatten()).collect::<anyhow::Result<Vec<_>>>()?;
 
 	let part1 = packet_pairs
 		.iter()
@@ -87,14 +91,21 @@ fn main() {
 		.map(|(i, _)| i + 1)
 		.product::<usize>();
 	println!("Part 2: {part2}");
+
+	Ok(())
 }
 
-fn parse_packet_pairs(iter: impl IntoIterator<Item = String>) -> impl Iterator<Item = [Packet; 2]> {
+fn parse_packet_pairs(
+	iter: impl IntoIterator<Item = String>,
+) -> impl Iterator<Item = anyhow::Result<[Packet; 2]>> {
 	let mut iter = iter.into_iter();
 
 	iter::from_fn(move || {
-		let result = [iter.next()?.parse().unwrap(), iter.next()?.parse().unwrap()];
+		let fst = propagate!(iter.next().map(|x| x.parse()));
+		let snd = propagate!(iter.next().map(|x| x.parse()));
+
+		let result: [Packet; 2] = [fst, snd];
 		iter.next(); // Optionally consume trailing blank line
-		Some(result)
+		Some(Ok(result))
 	})
 }
