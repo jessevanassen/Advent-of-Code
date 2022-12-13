@@ -1,9 +1,4 @@
-use std::{
-	cmp::Ordering,
-	io::stdin,
-	iter::{self, Peekable},
-	str::FromStr,
-};
+use std::{cmp::Ordering, io::stdin, iter, str::FromStr};
 
 type PacketValue = u8;
 
@@ -14,39 +9,32 @@ enum Packet {
 }
 
 impl FromStr for Packet {
-	type Err = ();
+	type Err = String;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		fn parse(iter: &mut Peekable<impl Iterator<Item = u8>>) -> Result<Packet, ()> {
-			if matches!(iter.peek(), Some(c) if c.is_ascii_digit()) {
-				let mut acc = 0;
+		use nom::{
+			branch::alt,
+			character::complete::{char, u8},
+			combinator::map,
+			multi::separated_list0,
+			sequence::delimited,
+			Finish, IResult,
+		};
 
-				while let Some(c) = iter.next_if(u8::is_ascii_digit) {
-					acc = acc * 10 + (c - b'0');
-				}
-
-				return Ok(Packet::Integer(acc));
-			}
-
-			if iter.next_if_eq(&b'[').is_some() {
-				let mut children = Vec::new();
-
-				while !matches!(iter.peek(), Some(b']')) {
-					children.push(parse(iter)?);
-					iter.next_if_eq(&b',');
-				}
-
-				if !matches!(iter.next(), Some(b']')) {
-					return Err(());
-				}
-
-				return Ok(Packet::List(children));
-			}
-
-			Err(())
+		fn packet(s: &str) -> IResult<&str, Packet> {
+			alt((
+				map(u8, Packet::Integer),
+				map(
+					delimited(char('['), separated_list0(char(','), packet), char(']')),
+					Packet::List,
+				),
+			))(s)
 		}
 
-		parse(&mut s.bytes().peekable())
+		packet(s)
+			.finish()
+			.map(|x| x.1)
+			.map_err(|err| err.to_string())
 	}
 }
 
