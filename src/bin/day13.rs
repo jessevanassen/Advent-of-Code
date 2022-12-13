@@ -78,19 +78,30 @@ fn main() -> anyhow::Result<()> {
 
 	let dividers = [2, 6].map(|v| Packet::List(vec![Packet::List(vec![Packet::Integer(v)])]));
 
-	let mut packets = packet_pairs
+	let part2 = packet_pairs
 		.iter()
 		.flatten()
-		.chain(dividers.iter())
-		.collect::<Vec<_>>();
-	packets.sort();
-	let part2 = packets
-		.iter()
-		.enumerate()
-		.filter(|(_, packet)| dividers.contains(packet))
-		.map(|(i, _)| i + 1)
+		// We don't have to sort the entries to find the final position of a
+		// divider, we only have to count how many items are smaller than a
+		// divider to find its final position.
+		// With a fold, we can do that for both dividers in a single pass.
+		.fold([1, 2], |acc, entry| {
+			let divider0_larger = entry < &dividers[0];
+			let divider1_larger =
+				// If divider 0 is larger than the entry, divider 1 is certainly
+				// larger than the entry as well, as divider 1 is larger than
+				// divider 0
+				divider0_larger ||
+				entry < &dividers[1];
+
+			[
+				acc[0] + divider0_larger as usize,
+				acc[1] + divider1_larger as usize,
+			]
+		})
+		.into_iter()
 		.product::<usize>();
-	println!("Part 2: {part2}");
+	println!("Part 2: {part2:?}");
 
 	Ok(())
 }
