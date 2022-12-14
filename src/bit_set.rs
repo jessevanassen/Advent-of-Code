@@ -18,7 +18,6 @@ impl BitSet {
 		value <= self.capacity
 	}
 
-
 	pub fn contains(&self, value: usize) -> bool {
 		if !self.within_capacity(value) {
 			return false;
@@ -50,7 +49,10 @@ impl BitSet {
 	}
 
 	pub fn len(&self) -> usize {
-		self.data.iter().map(|b| b.count_ones() as usize).sum()
+		self.data
+			.iter()
+			.map(|b| b.count_ones() as usize)
+			.sum()
 	}
 
 	pub fn is_empty(&self) -> bool {

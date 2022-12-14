@@ -10,7 +10,7 @@ macro_rules! propagate {
 		match $expr {
 			None => return None,
 			Some(Err(err)) => return Some(Err(err)),
-			Some(Ok(value)) => value
+			Some(Ok(value)) => value,
 		}
 	};
 }

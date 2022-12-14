@@ -9,7 +9,11 @@ fn main() {
 	let forest: Forest = stdin()
 		.lines()
 		.flatten()
-		.map(|line| line.into_bytes().into_iter().map(|b| b - b'0'))
+		.map(|line| {
+			line.into_bytes()
+				.into_iter()
+				.map(|b| b - b'0')
+		})
 		.collect::<Forest>();
 
 	// All trees in the outer ring are visible
