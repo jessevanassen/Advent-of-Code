@@ -1,114 +1,144 @@
-use std::{collections::HashMap, io::stdin};
+use std::{
+	cmp::Reverse,
+	collections::{BinaryHeap, HashMap},
+	io::stdin,
+};
 
 use aoc2022::ByteSet;
 use regex::Regex;
 
-type Room = (
-	u32,     // Flow rate when valve is opened
-	Vec<u8>, // Connected rooms
-);
+type FlowRate = usize;
+type TravelCost = usize;
+type Room = (FlowRate, Vec<TravelCost>);
 
 fn main() {
-	let rooms = parse_input(stdin().lines().flatten());
-
-	const TIME_LIMIT: u32 = 26;
-
-	let result = do_it_daddy(TIME_LIMIT, &rooms);
-	dbg!(result);
+	let rooms = parse_rooms(stdin().lines().flatten());
+	println!("Part 1: {}", maximum_pressure(30, 0, &rooms));
 }
 
-fn do_it_daddy(time_remaining: u32, rooms: &[Room]) -> u32 {
-	type Cache = HashMap<(u32, [u8; 2], ByteSet), u32>;
+fn maximum_pressure(time_remaining: usize, current_room: usize, rooms: &[Room]) -> FlowRate {
+	type Cache = HashMap<(usize, usize, ByteSet), usize>;
 
-	fn recurse(
-		time_remaining: u32,
-		current_rooms: [u8; 2],
+	fn maximum_pressure(
+		time_remaining: usize,
+		current_room: usize,
 		visited: ByteSet,
 		rooms: &[Room],
 		cache: &mut Cache,
-	) -> u32 {
-		if time_remaining == 0 {
+	) -> FlowRate {
+		/* The pressure will start to relieve after 1 turn. If there is only
+		 * one turn remaining, the pressure won't relieve before the time
+		 * is up. */
+		if time_remaining <= 1 || visited.len() as usize == rooms.len() {
 			return 0;
 		}
 
-		let cache_key = (time_remaining, current_rooms, visited);
+		let cache_key = (time_remaining, current_room, visited);
 
-		if let Some(&cached) = cache.get(&cache_key) {
-			return cached;
+		if let Some(v) = cache.get(&cache_key) {
+			return *v;
 		}
 
-		let time_remaining = time_remaining - 1;
+		let (flow_rate, connections) = &rooms[current_room];
 
-		let to_visit = current_rooms.map(|room| {
-			let (flow, connected) = &rooms[room as usize];
-			let can_open_valve = *flow > 0 && !visited.contains(room);
-			connected
-				.iter()
-				.map(|room| (*room, 0, visited))
-				.chain(can_open_valve.then(|| {
-					let mut visited = visited;
-					visited.insert(room);
-					let additional = time_remaining * flow;
-					(room, additional, visited)
-				}))
-				.collect::<Vec<_>>()
+		let current_room_result = (!visited.contains(current_room as _)).then(|| {
+			let mut visited = visited;
+			visited.insert(current_room as _);
+
+			let room_gain = flow_rate * (time_remaining - 1);
+
+			room_gain + maximum_pressure(time_remaining - 1, current_room, visited, rooms, cache)
 		});
 
-		let result = combinations(&to_visit[0], &to_visit[1])
-			.filter(|(x, y)| !(x.0 == y.0 && x.1 > 0 && y.1 > 0))
-			.map(|(&x, &y)| ([x.0, y.0], x.1 + y.1, x.2.union(&y.2)))
-			.map(|(mut current_rooms, to_add, visited)| {
-				current_rooms.sort();
-				to_add + recurse(time_remaining, current_rooms, visited, rooms, cache)
+		let max_pressure = connections
+			.iter()
+			.enumerate()
+			.filter(|(room, ..)| *room != current_room)
+			.filter(|(_, travel_cost)| {
+				matches!(
+					time_remaining.checked_sub(**travel_cost),
+					/* It takes at least 2 turns in addition to the travel cost
+					 * to start to relieve pressure. */
+					Some(v) if v > 1,
+				)
 			})
+			.map(|(room, travel_cost)| {
+				maximum_pressure(time_remaining - travel_cost, room, visited, rooms, cache)
+			})
+			.chain(current_room_result)
 			.max()
-			.unwrap();
+			.unwrap_or(0);
 
-		cache.insert(cache_key, result);
+		cache.insert(cache_key, max_pressure);
 
-		result
+		max_pressure
 	}
 
-	recurse(
+	maximum_pressure(
 		time_remaining,
-		[0; 2],
+		current_room,
 		ByteSet::new(),
 		rooms,
-		&mut HashMap::new(),
+		&mut Cache::new(),
 	)
 }
 
-fn combinations<'a, T>(xs: &'a [T], ys: &'a [T]) -> impl Iterator<Item = (&'a T, &'a T)> + 'a {
-	(0..xs.len())
-		.flat_map(|i| (0..ys.len()).map(move |j| (i, j)))
-		.map(|(i, j)| (&xs[i], &ys[j]))
-}
+fn parse_rooms(input: impl IntoIterator<Item = String>) -> Vec<Room> {
+	const START: RoomKey = parse_room_key("AA");
 
-fn parse_input(input: impl IntoIterator<Item = String>) -> Vec<Room> {
 	let mut lines = input
 		.into_iter()
 		.map(|line| parse_line(&line).unwrap())
 		.collect::<Vec<_>>();
 	lines.sort_by_key(|x| x.0);
 
-	lines
+	let rooms_with_valves = lines
 		.iter()
-		.map(|(_, (flow_rate, connected))| {
-			let names = connected
+		.filter(|(key, flow_rate, ..)| *flow_rate > 0 || key == &START)
+		.map(|(key, flow_rate, ..)| (*key, *flow_rate))
+		.collect::<Vec<_>>();
+
+	rooms_with_valves
+		.iter()
+		.map(|&(room_key, flow_rate)| {
+			let paths = shortest_paths(room_key, &lines);
+			let connections = rooms_with_valves
 				.iter()
-				.map(|name| {
-					lines
-						.binary_search_by_key(&name, |(name, _)| name)
-						.map(|x| x as u8)
-						.unwrap()
-				})
+				.map(|(room_key, ..)| *paths.get(room_key).unwrap())
 				.collect();
-			(*flow_rate, names)
+			(flow_rate, connections)
 		})
 		.collect()
 }
 
-fn parse_line(line: &str) -> Option<(u16, (u32, Vec<u16>))> {
+fn shortest_paths(from: RoomKey, lines: &[Line]) -> HashMap<RoomKey, usize> {
+	let mut distances = HashMap::new();
+
+	let mut queue: BinaryHeap<Reverse<(usize, RoomKey)>> = BinaryHeap::new();
+	queue.push(Reverse((0, from)));
+
+	while let Some(Reverse((distance, room_key))) = queue.pop() {
+		distances.insert(room_key, distance);
+
+		let connection_index = lines
+			.binary_search_by_key(&&room_key, |(room_key, ..)| room_key)
+			.unwrap();
+		let connections = lines[connection_index]
+			.2
+			.iter()
+			.filter(|room_key| !distances.contains_key(room_key));
+		for connection in connections {
+			queue.push(Reverse((distance + 1, *connection)));
+		}
+	}
+
+	distances
+}
+
+type RoomKey = u16;
+type Line = (RoomKey, FlowRate, Vec<RoomKey>);
+
+fn parse_line(line: &str) -> Option<Line> {
 	lazy_static::lazy_static! {
 		static ref RE: Regex = Regex::new(r"Valve ([A-Z]{2}) has flow rate=(\d+); tunnels? leads? to valves? (.+)").unwrap();
 	}
@@ -121,42 +151,21 @@ fn parse_line(line: &str) -> Option<(u16, (u32, Vec<u16>))> {
 
 	Some((
 		parse_room_key(captures.next().unwrap()),
-		(
-			captures
-				.next()
-				.unwrap()
-				.parse()
-				.unwrap(),
-			captures
-				.next()
-				.unwrap()
-				.split(", ")
-				.map(parse_room_key)
-				.collect(),
-		),
+		captures
+			.next()
+			.unwrap()
+			.parse()
+			.unwrap(),
+		captures
+			.next()
+			.unwrap()
+			.split(", ")
+			.map(parse_room_key)
+			.collect(),
 	))
 }
 
-fn parse_room_key(room: &str) -> u16 {
-	room.bytes()
-		.into_iter()
-		.map(|c| c - b'A')
-		.fold(0, |acc, c| acc * 26 + c as u16)
-}
-
-#[cfg(test)]
-mod tests {
-	use super::*;
-
-	#[test]
-	fn test_combinations() {
-		let combinations = combinations(&[1, 2, 3], &[4, 5]).collect::<Vec<_>>();
-		assert_eq!(6, combinations.len());
-		assert_eq!((&1, &4), combinations[0]);
-		assert_eq!((&1, &5), combinations[1]);
-		assert_eq!((&2, &4), combinations[2]);
-		assert_eq!((&2, &5), combinations[3]);
-		assert_eq!((&3, &4), combinations[4]);
-		assert_eq!((&3, &5), combinations[5]);
-	}
+const fn parse_room_key(room: &str) -> RoomKey {
+	let bytes = room.as_bytes();
+	(bytes[0] - b'A') as RoomKey * 26 + (bytes[1] - b'A') as RoomKey
 }
