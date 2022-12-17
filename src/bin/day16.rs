@@ -13,41 +13,47 @@ type Room = (FlowRate, Vec<TravelCost>);
 
 fn main() {
 	let rooms = parse_rooms(stdin().lines().flatten());
-	println!("Part 1: {}", maximum_pressure(30, 0, &rooms));
+	let (part1, ..) = maximum_pressure(30, ByteSet::default(), &rooms);
+	println!("Part 1: {part1}");
+
+	let (first_relieved_pressure, opened_valves) = maximum_pressure(26, ByteSet::default(), &rooms);
+	let (second_relieved_pressure, ..) = maximum_pressure(26, opened_valves, &rooms);
+	println!("Part 2: {}", first_relieved_pressure + second_relieved_pressure);
 }
 
-fn maximum_pressure(time_remaining: usize, current_room: usize, rooms: &[Room]) -> FlowRate {
+fn maximum_pressure(time_remaining: usize, opened_valves: ByteSet, rooms: &[Room]) -> (FlowRate, ByteSet) {
 	type Cache = HashMap<(usize, usize, ByteSet), usize>;
 
 	fn maximum_pressure(
 		time_remaining: usize,
 		current_room: usize,
-		visited: ByteSet,
+		opened_valves: ByteSet,
 		rooms: &[Room],
 		cache: &mut Cache,
-	) -> FlowRate {
+	) -> (FlowRate, ByteSet) {
 		/* The pressure will start to relieve after 1 turn. If there is only
 		 * one turn remaining, the pressure won't relieve before the time
 		 * is up. */
-		if time_remaining <= 1 || visited.len() as usize == rooms.len() {
-			return 0;
+		if time_remaining <= 1 || opened_valves.len() as usize == rooms.len() {
+			return (0, opened_valves);
 		}
 
-		let cache_key = (time_remaining, current_room, visited);
+		let cache_key = (time_remaining, current_room, opened_valves);
 
 		if let Some(v) = cache.get(&cache_key) {
-			return *v;
+			return (*v, opened_valves);
 		}
 
 		let (flow_rate, connections) = &rooms[current_room];
 
-		let current_room_result = (!visited.contains(current_room as _)).then(|| {
-			let mut visited = visited;
-			visited.insert(current_room as _);
+		let current_room_result = (!opened_valves.contains(current_room as _)).then(|| {
+			let mut opened_valves = opened_valves;
+			opened_valves.insert(current_room as _);
 
 			let room_gain = flow_rate * (time_remaining - 1);
 
-			room_gain + maximum_pressure(time_remaining - 1, current_room, visited, rooms, cache)
+			let (relieved_pressure, opened_valves) = maximum_pressure(time_remaining - 1, current_room, opened_valves, rooms, cache);
+			(room_gain + relieved_pressure, opened_valves)
 		});
 
 		let max_pressure = connections
@@ -63,21 +69,21 @@ fn maximum_pressure(time_remaining: usize, current_room: usize, rooms: &[Room]) 
 				)
 			})
 			.map(|(room, travel_cost)| {
-				maximum_pressure(time_remaining - travel_cost, room, visited, rooms, cache)
+				maximum_pressure(time_remaining - travel_cost, room, opened_valves, rooms, cache)
 			})
 			.chain(current_room_result)
-			.max()
-			.unwrap_or(0);
+			.max_by_key(|(relieved_pressure, ..)| *relieved_pressure)
+			.unwrap_or((0, opened_valves));
 
-		cache.insert(cache_key, max_pressure);
+		cache.insert(cache_key, max_pressure.0);
 
 		max_pressure
 	}
 
 	maximum_pressure(
 		time_remaining,
-		current_room,
-		ByteSet::new(),
+		0,
+		opened_valves,
 		rooms,
 		&mut Cache::new(),
 	)
