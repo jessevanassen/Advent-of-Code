@@ -1,10 +1,11 @@
 use std::{
+	collections::HashMap,
 	fmt::Display,
 	io::stdin,
-	ops::{Add, AddAssign, Range},
+	ops::{Add, AddAssign, Range, Sub},
 };
 
-use aoc2022::{extensions::MinMaxExt, vec::IVec2D};
+use aoc2022::{extensions::MinMaxExt, vec::IVec2D, last_n};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Shape(
@@ -28,6 +29,12 @@ impl Shape {
 			.map(|p| p.0)
 			.min_max()
 			.unwrap()
+	}
+
+	fn is_in_field_range(&self) -> bool {
+		const X_RANGE: Range<i32> = 0..(Field::WIDTH as i32);
+		let (min_x, max_x) = &self.min_max_x();
+		X_RANGE.contains(min_x) && X_RANGE.contains(max_x)
 	}
 }
 
@@ -97,6 +104,8 @@ struct Field {
 }
 
 impl Field {
+	const WIDTH: usize = 7;
+
 	pub fn intersects(&self, shape: &Shape) -> bool {
 		shape.0.iter().any(|coord| {
 			let x = coord.0 as u8;
@@ -126,32 +135,57 @@ impl Field {
 		self.pieces.len()
 	}
 
-	fn has_solid_top_layer(&self) -> bool {
-		if let Some(layer) = self.pieces.last() {
-			layer == &0b0111_1111
-		} else {
-			true
-		}
+	pub fn last_signature_key(&self) -> Option<RepetitionSignatureKey> {
+		last_n(RepetitionSignature::SIGNATURE_LENGTH, &self.pieces).map(|x| x.try_into().unwrap())
 	}
 }
 
 impl Display for Field {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		writeln!(f, "{}", "-".repeat(WIDTH + 2))?;
+		writeln!(f, "{}", "-".repeat(Field::WIDTH + 2))?;
 		for line in self.pieces.iter().rev() {
 			write!(f, "|")?;
-			for i in 0..WIDTH {
+			for i in 0..Field::WIDTH {
 				write!(f, "{}", if (1 << i) & line > 0 { '#' } else { ' ' })?;
 			}
 			writeln!(f, "|")?;
 		}
-		write!(f, "{}", "-".repeat(WIDTH + 2))?;
+		write!(f, "{}", "-".repeat(Field::WIDTH + 2))?;
 		Ok(())
 	}
 }
 
-const WIDTH: usize = 7;
 const DROP_HEIGHT: usize = 3;
+
+struct RepetitionSignature {
+	height: usize,
+	shape_count: usize,
+	direction_index: usize,
+}
+
+impl RepetitionSignature {
+	const SIGNATURE_LENGTH: usize = 16;
+	const REQUIRED_REPETITIONS: usize = 4;
+
+	fn equal_indices(&self, other: &Self) -> bool {
+		self.direction_index == other.direction_index
+			&& self.shape_count % SHAPES.len() == other.shape_count % SHAPES.len()
+	}
+}
+
+impl Sub for &RepetitionSignature {
+	type Output = RepetitionSignature;
+
+	fn sub(self, rhs: Self) -> Self::Output {
+		RepetitionSignature {
+			height: self.height - rhs.height,
+			shape_count: self.shape_count - rhs.shape_count,
+			direction_index: self.direction_index - rhs.direction_index,
+		}
+	}
+}
+
+type RepetitionSignatureKey = [u8; RepetitionSignature::SIGNATURE_LENGTH];
 
 fn main() {
 	let directions = parse_input(
@@ -167,38 +201,31 @@ fn main() {
 }
 
 fn play(limit: usize, directions: &[IVec2D]) -> usize {
-	let mut direction_index = 0;
-	let mut shape_index = 0;
+	let mut directions = directions
+		.iter()
+		.enumerate()
+		.cycle()
+		.peekable();
 
+	let mut shape_count = 0;
 	let mut stabilized_pieces: Field = Field::default();
-
 	let mut height_offset = 0;
+	let mut repetitions: HashMap<RepetitionSignatureKey, Vec<RepetitionSignature>> = HashMap::new();
 
-	#[derive(Debug)]
-	struct SolidLayer {
-		height: usize,
-		piece_count: usize,
-		shape_index: usize,
-		direction_index: usize,
-	}
-
-	let mut last_solid_layer: Option<SolidLayer> = None;
-
-	while shape_index < limit {
-		let shape = &SHAPES[shape_index % SHAPES.len()];
-		shape_index += 1;
+	while shape_count < limit {
+		let shape = &SHAPES[shape_count % SHAPES.len()];
+		shape_count += 1;
 
 		let start_y = stabilized_pieces.height() + DROP_HEIGHT;
 
 		let mut shape = shape + IVec2D(0, start_y as _);
 
 		for y in 0..=start_y {
-			let direction = &directions[direction_index % directions.len()];
-			direction_index += 1;
+			let direction = directions.next().unwrap().1;
 
 			/* Move shape left or right, if possible. */
 			let moved_shape = &shape + *direction;
-			if is_in_field_range(&moved_shape) && !stabilized_pieces.intersects(&moved_shape) {
+			if moved_shape.is_in_field_range() && !stabilized_pieces.intersects(&moved_shape) {
 				shape = moved_shape;
 			}
 
@@ -219,46 +246,33 @@ fn play(limit: usize, directions: &[IVec2D]) -> usize {
 
 		stabilized_pieces.insert(&shape);
 
-		if stabilized_pieces.has_solid_top_layer() {
-			let current = SolidLayer {
-				/* The indices have been proactively incremented so they are
-				 * already pointing to the next indices, but for the layer
-				 * calculation, the old values are needed. */
-				shape_index: shape_index - 1,
-				direction_index: direction_index - 1,
+		if let Some(signature_key) = stabilized_pieces.last_signature_key() {
+			let entry = repetitions
+				.entry(signature_key)
+				.or_default();
+			let signature = RepetitionSignature {
 				height: stabilized_pieces.height(),
-				piece_count: stabilized_pieces.piece_count,
+				shape_count,
+				direction_index: directions.peek().unwrap().0,
 			};
+			entry.push(signature);
 
-			if let Some(previous) = last_solid_layer {
-				let same_shape_index =
-					previous.shape_index % SHAPES.len() == current.shape_index % SHAPES.len();
-				let same_direction_index = previous.direction_index % directions.len()
-					== current.direction_index % directions.len();
+			if matches!(
+				last_n(RepetitionSignature::REQUIRED_REPETITIONS, entry),
+				Some(signatures) if signatures.windows(2).all(|xs| xs[0].equal_indices(&xs[1]))
+			) {
+				let last_two = last_n(2, entry).unwrap();
+				let diff = &last_two[1] - &last_two[0];
 
-				if same_shape_index && same_direction_index {
-					let directions_per_cycle = current.direction_index - previous.direction_index;
-					let shapes_per_cycle = current.piece_count - previous.piece_count;
-					let height_per_cycle = current.height - previous.height;
-					let cycles_to_skip = (limit - shape_index - 1) / shapes_per_cycle;
+				let cycles_to_skip = (limit - shape_count) / diff.shape_count;
 
-					shape_index += shapes_per_cycle * cycles_to_skip;
-					direction_index += directions_per_cycle * cycles_to_skip;
-					height_offset += height_per_cycle * cycles_to_skip;
-				}
+				shape_count += diff.shape_count * cycles_to_skip;
+				height_offset += diff.height * cycles_to_skip;
 			}
-
-			last_solid_layer = Some(current);
 		}
 	}
 
 	height_offset + stabilized_pieces.height()
-}
-
-fn is_in_field_range(shape: &Shape) -> bool {
-	const X_RANGE: Range<i32> = 0..(WIDTH as i32);
-	let (min_x, max_x) = &shape.min_max_x();
-	X_RANGE.contains(min_x) && X_RANGE.contains(max_x)
 }
 
 fn parse_input(line: &str) -> Vec<IVec2D> {

@@ -18,3 +18,17 @@ pub mod vec;
 pub fn min_max<T: Ord + Copy>(x: T, y: T) -> (T, T) {
 	(Ord::min(x, y), Ord::max(x, y))
 }
+
+/// Returns a slice of the last n elements, or `None` if the slice doesn't have
+/// enough elements.
+///
+/// # Examples
+/// ```rust
+/// # use aoc2022::last_n;
+/// let values = [0, 1, 2, 3].as_slice();
+/// assert_eq!(last_n(2, values), Some([2, 3].as_slice()));
+/// assert_eq!(last_n(5, values), None);
+/// ```
+pub fn last_n<T>(n: usize, values: &[T]) -> Option<&[T]> {
+	(n <= values.len()).then(|| &values[(values.len() - n)..])
+}
