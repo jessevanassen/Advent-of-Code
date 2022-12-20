@@ -5,7 +5,7 @@ use std::{
 	ops::{Add, AddAssign, Range, Sub},
 };
 
-use aoc2022::{extensions::MinMaxExt, vec::IVec2D, last_n};
+use aoc2022::{extensions::MinMaxExt, last_n, vec::IVec2D};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Shape(

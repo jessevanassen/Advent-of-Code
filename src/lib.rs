@@ -33,7 +33,6 @@ pub fn last_n<T>(n: usize, values: &[T]) -> Option<&[T]> {
 	(n <= values.len()).then(|| &values[(values.len() - n)..])
 }
 
-
 /// # Examples
 /// ```rust
 /// # use aoc2022::triangle_number;

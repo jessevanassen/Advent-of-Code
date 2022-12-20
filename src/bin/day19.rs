@@ -2,7 +2,7 @@ use std::{
 	collections::HashSet,
 	fmt::Display,
 	io::stdin,
-	ops::{Add, Deref, DerefMut, Index, IndexMut, Sub},
+	ops::{Add, Deref, Index, IndexMut, Sub},
 	str::FromStr,
 };
 
