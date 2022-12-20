@@ -32,3 +32,16 @@ pub fn min_max<T: Ord + Copy>(x: T, y: T) -> (T, T) {
 pub fn last_n<T>(n: usize, values: &[T]) -> Option<&[T]> {
 	(n <= values.len()).then(|| &values[(values.len() - n)..])
 }
+
+
+/// # Examples
+/// ```rust
+/// # use aoc2022::triangle_number;
+/// assert_eq!(triangle_number(0), 0);
+/// assert_eq!(triangle_number(1), 1);
+/// assert_eq!(triangle_number(2), 1 + 2);
+/// assert_eq!(triangle_number(3), 1 + 2 + 3);
+/// ```
+pub fn triangle_number(n: usize) -> usize {
+	n * (n + 1) / 2
+}
