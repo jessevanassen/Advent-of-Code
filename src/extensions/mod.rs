@@ -1,3 +1,6 @@
+mod avg;
+pub use avg::AvgExt;
+
 mod pipe;
 pub use pipe::*;
 
