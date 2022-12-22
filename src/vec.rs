@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Neg, Sub};
+use std::{
+	fmt::Display,
+	ops::{Add, AddAssign, Neg, Sub},
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Default)]
 pub struct IVec2D(pub i32, pub i32);
@@ -34,6 +37,34 @@ impl IVec2D {
 	pub fn chessboard_distance(self, other: Self) -> u32 {
 		let diff = other - self;
 		Ord::max(diff.0.unsigned_abs(), diff.1.unsigned_abs())
+	}
+
+	/// # Examples
+	/// ```
+	/// # use aoc2022::vec::IVec2D;
+	/// assert_eq!(IVec2D::UP.rotate_cw(),    IVec2D::RIGHT);
+	/// assert_eq!(IVec2D::RIGHT.rotate_cw(), IVec2D::DOWN);
+	/// assert_eq!(IVec2D::DOWN.rotate_cw(),  IVec2D::LEFT);
+	/// assert_eq!(IVec2D::LEFT.rotate_cw(),  IVec2D::UP);
+	/// ```
+	pub fn rotate_cw(self) -> Self {
+		Self(self.1, -self.0)
+	}
+
+	/// # Examples
+	/// ```
+	/// # use aoc2022::vec::IVec2D;
+	/// assert_eq!(IVec2D::UP.rotate_ccw(),    IVec2D::LEFT);
+	/// assert_eq!(IVec2D::RIGHT.rotate_ccw(), IVec2D::UP);
+	/// assert_eq!(IVec2D::DOWN.rotate_ccw(),  IVec2D::RIGHT);
+	/// assert_eq!(IVec2D::LEFT.rotate_ccw(),  IVec2D::DOWN);
+	/// ```
+	pub fn rotate_ccw(self) -> Self {
+		Self(-self.1, self.0)
+	}
+
+	pub fn flip(self) -> Self {
+		Self(-self.0, -self.1)
 	}
 }
 
@@ -72,6 +103,12 @@ impl Sub for IVec2D {
 
 	fn sub(self, rhs: Self) -> Self::Output {
 		self + -rhs
+	}
+}
+
+impl Display for IVec2D {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "({}, {})", self.0, self.1)
 	}
 }
 

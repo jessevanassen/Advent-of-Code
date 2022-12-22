@@ -16,6 +16,22 @@ impl<T> Grid2D<T> {
 
 		Self { items, width }
 	}
+
+	pub fn row(&self, y: usize) -> impl DoubleEndedIterator<Item = &T> + '_ {
+		(0..self.width).flat_map(move |x| self.get((x, y)))
+	}
+
+	pub fn column(&self, x: usize) -> impl DoubleEndedIterator<Item = &T> + '_ {
+		(0..self.height()).flat_map(move |y| self.get((x, y)))
+	}
+
+	pub fn last_row(&self) -> impl DoubleEndedIterator<Item = &T> + '_ {
+		self.row(self.height() - 1)
+	}
+
+	pub fn last_column(&self) -> impl DoubleEndedIterator<Item = &T> + '_ {
+		self.column(self.height() - 1)
+	}
 }
 
 impl<T: Default> Grid2D<T> {
