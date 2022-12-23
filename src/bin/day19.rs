@@ -20,7 +20,7 @@ fn main() -> anyhow::Result<()> {
 
 	let part1: usize = blueprints
 		.iter()
-		.map(|blueprint| solve(24, blueprint) as usize)
+		.map(|blueprint| solve(24, blueprint))
 		.enumerate()
 		.map(|(i, x)| (i + 1) * x)
 		.sum();
@@ -29,7 +29,7 @@ fn main() -> anyhow::Result<()> {
 	let part2: usize = blueprints
 		.iter()
 		.take(3)
-		.map(|blueprint| solve(32, blueprint) as usize)
+		.map(|blueprint| solve(32, blueprint))
 		.product();
 	println!("Part 2: {part2}");
 
