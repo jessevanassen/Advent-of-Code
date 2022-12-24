@@ -112,6 +112,34 @@ impl Display for IVec2D {
 	}
 }
 
+impl From<(i32, i32)> for IVec2D {
+	fn from((x, y): (i32, i32)) -> Self {
+		Self(x, y)
+	}
+}
+
+impl From<IVec2D> for (i32, i32) {
+	fn from(value: IVec2D) -> Self {
+		(value.0, value.1)
+	}
+}
+
+impl TryFrom<(usize, usize)> for IVec2D {
+	type Error = std::num::TryFromIntError;
+
+	fn try_from((x, y): (usize, usize)) -> Result<Self, Self::Error> {
+		Ok(Self(x.try_into()?, y.try_into()?))
+	}
+}
+
+impl TryFrom<IVec2D> for (usize, usize) {
+	type Error = std::num::TryFromIntError;
+
+	fn try_from(IVec2D(x, y): IVec2D) -> Result<Self, Self::Error> {
+		Ok((x.try_into()?, y.try_into()?))
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
