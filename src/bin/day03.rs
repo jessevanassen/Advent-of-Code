@@ -95,7 +95,10 @@ fn main() -> anyhow::Result<()> {
 
 	let part2 = 'block: {
 		for rectangle in &rectangles {
-			if rectangle.points().all(|p| occupation[p.1 as usize][p.0 as usize] == 1) {
+			if rectangle
+				.points()
+				.all(|p| occupation[p.1 as usize][p.0 as usize] == 1)
+			{
 				break 'block rectangle;
 			}
 		}

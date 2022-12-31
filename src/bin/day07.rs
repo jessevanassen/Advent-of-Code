@@ -83,7 +83,11 @@ fn build_time(dependencies: &Dependencies) -> usize {
 				let deps = dependencies[*v as usize].unwrap();
 				built & deps == deps
 			})
-			.filter(|v| !workers.iter().any(|w| matches!(w, Some(t) if t.task == *v)))
+			.filter(|v| {
+				!workers
+					.iter()
+					.any(|w| matches!(w, Some(t) if t.task == *v))
+			})
 			.collect::<Vec<_>>()
 			.into_iter();
 

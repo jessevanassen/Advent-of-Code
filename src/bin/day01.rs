@@ -18,7 +18,9 @@ fn main() -> anyhow::Result<()> {
 		let mut seen = HashSet::new();
 		let mut sum = 0;
 		loop {
-			sum += iter.next().expect("Iter should have been infinite");
+			sum += iter
+				.next()
+				.expect("Iter should have been infinite");
 			if !seen.insert(sum) {
 				break sum;
 			}
