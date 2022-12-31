@@ -101,7 +101,7 @@ mod tests {
 
 	#[test]
 	fn test_min_max() -> anyhow::Result<()> {
-		let (min, max) = IVec2D::min_max(&[IVec2D(10, 10), IVec2D(5, 20), IVec2D(15, 0)])
+		let (min, max) = IVec2D::min_max([IVec2D(10, 10), IVec2D(5, 20), IVec2D(15, 0)])
 			.context("Expect a result")?;
 
 		assert_eq!(IVec2D(5, 0), min);
