@@ -1,6 +1,6 @@
 use std::io::stdin;
 
-use aoc2018::opcode::{OpCode, Registers};
+use aoc2018::opcode::{OpCode, Registers, Arguments};
 
 static ALL_OPCODES: [OpCode; 16] = [
 	OpCode::AddRegister,
@@ -83,8 +83,6 @@ fn possible_opcodes<'a>(
 		.filter(move |opcode| opcode.apply(sample.instruction.arguments, sample.before) == sample.after)
 }
 
-type Arguments = [u8; 3];
-
 #[derive(Debug)]
 struct Instruction {
 	opcode: u8,
@@ -101,8 +99,8 @@ struct Sample {
 fn parse_input(
 	lines: impl IntoIterator<Item = impl AsRef<str>>,
 ) -> (Vec<Sample>, Vec<Instruction>) {
-	fn ascii_digit(char: u8) -> u8 {
-		char - b'0'
+	fn ascii_digit(char: u8) -> u32 {
+		(char - b'0') as _
 	}
 
 	fn parse_register(line: &str) -> Registers {
@@ -111,9 +109,9 @@ fn parse_input(
 			.skip(9)
 			.step_by(3)
 			.take(4)
-			.map(|x| ascii_digit(x) as u32);
+			.map(ascii_digit);
 		let mut next = || iter.next().unwrap();
-		[next(), next(), next(), next()]
+		[next(), next(), next(), next(), 0, 0]
 	}
 
 	fn parse_instruction(line: &str) -> Instruction {
@@ -122,7 +120,7 @@ fn parse_input(
 			.map(|p| p.parse().unwrap());
 		let mut next = || iter.next().unwrap();
 		Instruction {
-			opcode: next(),
+			opcode: next() as u8,
 			arguments: [next(), next(), next()],
 		}
 	}
