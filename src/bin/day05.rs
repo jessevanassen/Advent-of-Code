@@ -3,6 +3,8 @@ use std::{
 	ops::Range,
 };
 
+use aoc2023::range::overlaps;
+
 fn main() {
 	let input = {
 		let mut buf = String::new();
@@ -12,34 +14,34 @@ fn main() {
 
 	let (seeds, mappings) = parse_input(&input);
 
-	let part1 = seeds
-		.iter()
-		.map(|&seed| mappings.apply(seed))
-		.min()
-		.unwrap();
-	println!("Part 1: {part1}");
+	println!("Part 1: {}", {
+		let seed_ranges = seeds.iter().map(|&seed| (seed..(seed + 1)));
+		min_destination_for_seed_ranges(seed_ranges, &mappings)
+	});
 
-	let seed_ranges = seeds
-		.chunks(2)
-		.map(|c| {
+	println!("Part 2: {}", {
+		let seed_ranges = seeds.chunks(2).map(|c| {
 			let start = c[0];
 			let length = c[1];
 			start..(start + length)
-		})
-		.collect::<Box<_>>();
-	let seed_ranges_contains = |seed| seed_ranges.iter().any(|range| range.contains(&seed));
+		});
+		min_destination_for_seed_ranges(seed_ranges, &mappings)
+	});
+}
 
-	let inverted_mappings = mappings.invert();
+fn min_destination_for_seed_ranges(ranges: impl Iterator<Item = Range<usize>>, mappings: &Mappings) -> usize {
+	// Is there a way to do this without allocating a Vec for every step?
 
-	// Try all possible destination until we find a matching seed
-	let part2 = (0..)
-		.find(|&destination| {
-			let seed = inverted_mappings.apply(destination);
-			seed_ranges_contains(seed)
-		})
-		.unwrap();
+	let mut ranges = ranges.collect::<Vec<_>>();
 
-	println!("Part 2: {part2}");
+	for mapping in mappings {
+		ranges = ranges
+			.iter()
+			.flat_map(|range| split_range(range, mapping))
+			.collect();
+	}
+
+	ranges.into_iter().map(|r| r.start).min().unwrap()
 }
 
 fn parse_input(input: &str) -> (Box<[usize]>, Mappings) {
@@ -53,7 +55,7 @@ fn parse_input(input: &str) -> (Box<[usize]>, Mappings) {
 
 	let mappings = groups
 		.map(|group| {
-			let rules = group
+			let mut rules = group
 				.lines()
 				.skip(1)
 				.map(|line| {
@@ -70,67 +72,91 @@ fn parse_input(input: &str) -> (Box<[usize]>, Mappings) {
 						offset,
 					}
 				})
-				.collect::<Box<_>>();
-			Mapping(rules)
+				.collect::<Vec<_>>();
+			rules.sort_by_key(|m| m.range.start);
+			rules
 		})
-		.collect::<Box<_>>();
-	let mappings = Mappings(mappings);
+		.collect();
 
 	(seeds, mappings)
 }
 
-struct Mappings(Box<[Mapping]>);
-
-impl Mappings {
-	pub fn apply(&self, value: usize) -> usize {
-		self.0
-			.iter()
-			.fold(value, |value, mapping| mapping.apply(value))
-	}
-
-	fn invert(&self) -> Self {
-		let mappings = self.0.iter().rev().map(Mapping::invert).collect();
-		Self(mappings)
-	}
-}
-
-struct Mapping(Box<[MappingRule]>);
-
-impl Mapping {
-	pub fn apply(&self, value: usize) -> usize {
-		self.0
-			.iter()
-			.find_map(|rule| rule.apply(value))
-			.unwrap_or(value)
-	}
-
-	fn invert(&self) -> Self {
-		let rules = self.0.iter().map(MappingRule::invert).collect();
-		Self(rules)
-	}
-}
-
+type Mappings = Vec<Mapping>;
+type Mapping = Vec<MappingRule>;
 struct MappingRule {
 	range: Range<usize>,
 	offset: isize,
 }
 
-impl MappingRule {
-	fn apply(&self, value: usize) -> Option<usize> {
-		self.range.contains(&value).then(|| {
-			let value = value as isize;
-			(value + self.offset) as usize
-		})
+/// Splits a range into several subranges, based on the given mapping.
+/// The mapping's offset is applied to the range that overlaps with the mapping.
+fn split_range(range: &Range<usize>, mapping: &Mapping) -> Vec<Range<usize>> {
+	let mut rules = mapping
+		.iter()
+		.filter(|rule| overlaps(range, &rule.range))
+		.peekable();
+
+	if rules.peek().is_none() {
+		return vec![range.clone()];
 	}
 
-	fn invert(&self) -> MappingRule {
-		let start = (self.range.start as isize + self.offset) as usize;
-		let end = (self.range.end as isize + self.offset) as usize;
-		let range = start..end;
+	let mut result = Vec::new();
 
-		Self {
-			range,
-			offset: -self.offset,
+	let first = rules.peek().unwrap();
+	if range.start < first.range.start {
+		result.push(range.start..first.range.start);
+	}
+
+	while let Some(rule) = rules.next() {
+		let start = rule.range.start.max(range.start);
+		let start = (start as isize + rule.offset) as usize;
+		let end = rule.range.end.min(range.end);
+		let end = (end as isize + rule.offset) as usize;
+		result.push(start..end);
+
+		let next_start = rules
+			.peek()
+			.map(|rule| rule.range.start.min(range.end))
+			.unwrap_or(range.end);
+
+		if rule.range.end < next_start {
+			result.push(rule.range.end..next_start);
 		}
+	}
+
+	result
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_split_range() {
+		let mapping: Mapping = vec![
+			MappingRule {
+				range: 20..40,
+				offset: 1000,
+			},
+			MappingRule {
+				range: 60..80,
+				offset: 2000,
+			},
+		];
+
+		let ranges = split_range(&(45..55), &mapping);
+		assert_eq!(ranges, vec![45..55]);
+
+		let ranges = split_range(&(0..40), &mapping);
+		assert_eq!(ranges, vec![0..20, 1020..1040]);
+
+		let ranges = split_range(&(20..60), &mapping);
+		assert_eq!(ranges, vec![1020..1040, 40..60]);
+
+		let ranges = split_range(&(20..40), &mapping);
+		assert_eq!(ranges, vec![1020..1040]);
+
+		let ranges = split_range(&(0..100), &mapping);
+		assert_eq!(ranges, vec![0..20, 1020..1040, 40..60, 2060..2080, 80..100]);
 	}
 }
