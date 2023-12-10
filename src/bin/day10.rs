@@ -16,9 +16,6 @@ fn main() {
 		.map(|x| x.bytes().collect::<Vec<_>>())
 		.collect::<Vec<_>>();
 
-	let height = input.len();
-	let width = input[0].len();
-
 	let start = enumerate_positions(&input)
 		.find_map(|(position, c)| (c == b'S').then_some(position))
 		.expect("Expected start position in input");
@@ -32,37 +29,52 @@ fn main() {
 		main_loop.iter().flatten().filter(|x| **x).count() / 2
 	);
 
+	let mut enclosed_positions = 0;
 
-	// Enlarge the map, so two touching pipes get a gap. This way, we can flood-fill the map and it
-	// will penetrate the gaps.
-	let mut big_input = vec![vec![false; width * 2 + 1]; height * 2 + 1];
-	for (y, row) in input.iter().enumerate() {
-		for (x, v) in row.iter().enumerate() {
-			if !*main_loop.index_by_vector2d(Vector2D::from((x, y))) {
-				continue;
+	// Walk over all positions that aren't part of the main loop
+	for (y, row) in main_loop.iter().enumerate() {
+		for (x, _) in row.iter().enumerate().filter(|(_, is_pipe)| !**is_pipe) {
+			let mut pipes_hit = 0;
+
+			// Cast a ray to the right from the current position
+			let ray = x..row.len();
+			let mut pipes = ray
+				// Only include pipes on the ray that are part of the main loop
+				.filter(|&x| row[x])
+				// Transform to the actual pipes
+				.map(|x| input[y][x])
+				// Ignore the horizontal pipes
+				.filter(|c| *c != b'-');
+
+			while let Some(symbol) = pipes.next() {
+				if symbol == b'|' {
+					pipes_hit += 1;
+					continue;
+				}
+
+				let next_symbol = pipes.next().expect("Unmatched corner");
+
+				match (symbol, next_symbol) {
+					// The pair of these corners effectively acts as a single wall
+					(b'F', b'J') => pipes_hit += 1,
+					(b'L', b'7') => pipes_hit += 1,
+
+					// These corners cancel each other out
+					(b'F', b'7') => {}
+					(b'L', b'J') => {}
+
+					_ => panic!("Mismatched corner pair"),
+				}
 			}
 
-			big_input[1 + y * 2][1 + x * 2] = true;
-
-			let right_connected = matches!(*v, b'S' | b'-' | b'F' | b'L');
-			big_input[1 + y * 2][1 + x * 2 + 1] = right_connected;
-
-			let bottom_connected = matches!(*v, b'S' | b'|' | b'7' | b'F');
-			big_input[1 + y * 2 + 1][1 + x * 2] = bottom_connected;
+			let is_enclosed = pipes_hit % 2 != 0;
+			if is_enclosed {
+				enclosed_positions += 1;
+			}
 		}
 	}
 
-	let flooded = flood_fill(&big_input, Vector2D(0, 0));
-
-	let open_positions =
-		enumerate_positions(&main_loop).filter_map(|(position, v)| (!v).then_some(position));
-	let part2 = open_positions
-		.filter(|Vector2D(x, y)| {
-			let position = Vector2D(1 + x * 2, 1 + y * 2);
-			!*flooded.index_by_vector2d(position)
-		})
-		.count();
-	println!("Part 2: {part2}");
+	println!("Part 2: {enclosed_positions}");
 }
 
 fn reconstruct_start(input: &Vec<Vec<u8>>, start: Vector2D) -> u8 {
@@ -159,35 +171,6 @@ fn enumerate_positions<T: Copy>(items: &Vec<Vec<T>>) -> impl Iterator<Item = (Ve
 			(position, *items.index_by_vector2d(position))
 		})
 	})
-}
-
-fn flood_fill(map: &Vec<Vec<bool>>, start: Vector2D) -> Vec<Vec<bool>> {
-	let mut flooded: Vec<Vec<bool>> = vec![vec![false; map[0].len()]; map.len()];
-	let mut visited: Vec<Vec<bool>> = flooded.clone();
-	let mut queue = vec![start];
-
-	while let Some(next) = queue.pop() {
-		let around = DIRECTIONS
-			.map(|it| next + it)
-			.into_iter()
-			.filter(|it| map.get_by_vector2d(*it).is_some());
-
-		for pos in around {
-			if *visited.index_by_vector2d(pos) {
-				continue;
-			}
-			*visited.index_mut_by_vector2d(pos) = true;
-
-			let open = !*map.index_by_vector2d(pos);
-
-			if open {
-				*flooded.index_mut_by_vector2d(pos) = true;
-				queue.push(pos);
-			}
-		}
-	}
-
-	flooded
 }
 
 trait Vec2DExt {
