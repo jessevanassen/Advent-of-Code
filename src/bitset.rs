@@ -8,7 +8,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	/// let mut bitset = BitSet::<1>::new();
 	///
 	/// assert!(!bitset.has(5));
@@ -26,7 +26,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	/// let mut bitset = BitSet::<1>::new();
 	///
 	/// bitset.insert(5);
@@ -44,7 +44,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	/// let mut bitset = BitSet::<1>::new();
 	///
 	/// assert!(!bitset.has(5));
@@ -57,7 +57,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	/// let mut bitset = BitSet::<1>::new();
 	///
 	/// assert_eq!(bitset.len(), 0);
@@ -72,7 +72,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	/// let mut bitset = BitSet::<1>::new();
 	///
 	/// assert!(bitset.is_empty());
@@ -85,7 +85,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	///
 	/// let fst: BitSet<1> = [0b00001111].into();
 	/// let snd: BitSet<1> = [0b00111100].into();
@@ -104,7 +104,7 @@ impl<const BUCKET_COUNT: usize> BitSet<BUCKET_COUNT> {
 	}
 
 	/// ```rust
-	/// # use aoc2023::BitSet;
+	/// # use aoc2023::bitset::BitSet;
 	///
 	/// let fst: BitSet<1> = [0b00001111].into();
 	/// let snd: BitSet<1> = [0b00111100].into();
