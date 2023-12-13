@@ -9,84 +9,52 @@ fn main() {
 	let input = {
 		let mut buf = String::new();
 		stdin().read_to_string(&mut buf).unwrap();
-		let buf = buf.trim_end().to_string();
-		buf.split("\n\n")
-			.map(|block| block.to_string())
-			.collect::<Vec<_>>()
+		buf
 	};
-
-	let reflection_lines = input
-		.iter()
+	let patterns = input
+		.split("\n\n")
 		.map(|block| Pattern::from_str(block).unwrap())
-		.map(|pattern| {
-			find_reflection_lines(&pattern)
-				.exactly_one()
-				.ok()
-				.expect("Expected a single reflection line")
-		})
 		.collect::<Vec<_>>();
 
-	let part1 = reflection_lines.iter().sum::<usize>();
-	println!("Part 1: {part1}");
+	let solve = |expected_errors: usize| {
+		patterns
+			.iter()
+			.map(|pattern| {
+				find_reflection_lines(pattern, expected_errors)
+					.exactly_one()
+					.ok()
+					.expect("Expected a single reflection line")
+			})
+			.sum::<usize>()
+	};
 
-	let part2 = input
-		.iter()
-		.enumerate()
-		.map(|(i, block)| {
-			possible_fixes(block)
-				.map(|block| Pattern::from_str(&block).unwrap())
-				.flat_map(|pattern| find_reflection_lines(&pattern).collect::<Vec<_>>())
-				/* The original reflection line might still be there, e.g. if the smudge was fixed
-				 * around the top left, but the original reflection line was towards the right. */
-				.filter(|line| line != &reflection_lines[i])
-				/* There should be only a single additional reflection line left. However, this
-				 * line can be found in two ways, by either changing the smudge on one side of the
-				 * reflection line, or on the other side, leading in two identical reflection
-				 * lines.
-				 * After removing the duplicate, only a single unique reflection line should
-				 * remain.*/
-				.dedup()
-				.exactly_one()
-				.ok()
-				.expect("Expected a single reflection line")
-		})
-		.sum::<usize>();
-	println!("Part 2: {part2}");
+	println!("Part 1: {}", solve(0));
+	println!("Part 2: {}", solve(1));
 }
 
-fn possible_fixes(input: &str) -> impl Iterator<Item = String> + '_ {
-	fn replacement(input: u8) -> Option<u8> {
-		match input {
-			b'.' => Some(b'#'),
-			b'#' => Some(b'.'),
-			_ => None,
-		}
-	}
-
-	let input = input.as_bytes();
-
-	input.iter().enumerate().filter_map(|(i, c)| {
-		let replacement = replacement(*c)?;
-
-		let mut bytes = input.to_vec();
-		bytes[i] = replacement;
-
-		Some(unsafe { String::from_utf8_unchecked(bytes) })
-	})
-}
-
-fn find_reflection_lines(pattern: &Pattern) -> impl Iterator<Item = usize> + '_ {
-	let vertical_lines = find_reflection_points(&pattern.columns);
-	let horizontal_lines = find_reflection_points(&pattern.rows).map(|x| x * 100);
+fn find_reflection_lines(
+	pattern: &Pattern,
+	expected_errors: usize,
+) -> impl Iterator<Item = usize> + '_ {
+	let vertical_lines = find_reflection_points(&pattern.columns, expected_errors);
+	let horizontal_lines = find_reflection_points(&pattern.rows, expected_errors).map(|x| x * 100);
 	horizontal_lines.chain(vertical_lines)
 }
 
-fn find_reflection_points(lines: &[u32]) -> impl Iterator<Item = usize> + '_ {
-	(1..lines.len()).filter(|&i| {
+fn find_reflection_points(
+	lines: &[u32],
+	expected_errors: usize,
+) -> impl Iterator<Item = usize> + '_ {
+	let potential_reflection_lines = 1..=(lines.len() - 1);
+	potential_reflection_lines.filter(move |&i| {
 		let above = lines[..i].iter().rev();
 		let below = lines[i..].iter();
 
-		above.zip(below).all(|(x, y)| x == y)
+		let errors = above
+			.zip(below)
+			.map(|(x, y)| (*x ^ *y).count_ones() as usize)
+			.sum::<usize>();
+		errors == expected_errors
 	})
 }
 
@@ -112,7 +80,7 @@ impl FromStr for Pattern {
 		let mut columns = vec![0; s.lines().next().map(|l| l.len()).unwrap_or(0)];
 
 		for (y, line) in s.lines().enumerate() {
-			for (x, c) in line.bytes().enumerate() {
+			for (x, c) in line.trim().bytes().enumerate() {
 				let bit = bit_value(c)? as u32;
 				rows[y] |= bit << x;
 				columns[x] |= bit << y;
