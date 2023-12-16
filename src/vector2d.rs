@@ -3,6 +3,20 @@ use std::num::TryFromIntError;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Vector2D(pub isize, pub isize);
 
+impl Vector2D {
+	pub fn rotate_cw(self) -> Vector2D {
+		assert!(self.0 == 0 || self.1 == 0);
+
+		Vector2D(self.1, -self.0)
+	}
+
+	pub fn rotate_ccw(self) -> Vector2D {
+		assert!(self.0 == 0 || self.1 == 0);
+
+		Vector2D(-self.1, self.0)
+	}
+}
+
 impl std::ops::Add for Vector2D {
 	type Output = Self;
 
@@ -44,5 +58,31 @@ impl TryFrom<Vector2D> for (usize, usize) {
 		let x = x.try_into()?;
 		let y = y.try_into()?;
 		Ok((x, y))
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	const UP: Vector2D = Vector2D(0, 1);
+	const RIGHT: Vector2D = Vector2D(1, 0);
+	const DOWN: Vector2D = Vector2D(0, -1);
+	const LEFT: Vector2D = Vector2D(-1, 0);
+
+	#[test]
+	fn test_rotate_cw() {
+		assert_eq!(RIGHT, UP.rotate_cw());
+		assert_eq!(DOWN, RIGHT.rotate_cw());
+		assert_eq!(LEFT, DOWN.rotate_cw());
+		assert_eq!(UP, LEFT.rotate_cw());
+	}
+
+	#[test]
+	fn test_rotate_ccw() {
+		assert_eq!(LEFT, UP.rotate_ccw());
+		assert_eq!(UP, RIGHT.rotate_ccw());
+		assert_eq!(RIGHT, DOWN.rotate_ccw());
+		assert_eq!(DOWN, LEFT.rotate_ccw());
 	}
 }

@@ -27,14 +27,22 @@ impl<T> Grid2D<T> {
 		self.items.len() / self.width
 	}
 
-	fn calculate_index(&self, (x, y): Index) -> usize {
-		y * self.width + x
+	fn calculate_index(&self, (x, y): Index) -> Option<usize> {
+		if x < self.width() && y < self.height() {
+			Some(y * self.width + x)
+		} else {
+			None
+		}
 	}
 
 	pub fn keys(&self) -> impl Iterator<Item = Index> {
 		let xs = 0..self.width();
 		let ys = 0..self.height();
 		ys.flat_map(move |y| xs.clone().zip(iter::repeat(y)))
+	}
+
+	pub fn values(&self) -> impl Iterator<Item = &T> {
+		self.items.iter()
 	}
 
 	pub fn enumerate(&self) -> impl Iterator<Item = (Index, &T)> {
@@ -81,14 +89,14 @@ impl<T> Grid2DGet<Index> for Grid2D<T> {
 
 	fn get(&self, index: Index) -> Option<&T> {
 		let index = self.calculate_index(index);
-		self.items.get(index)
+		index.and_then(|index| self.items.get(index))
 	}
 }
 
 impl<T> Grid2DGetMut<Index> for Grid2D<T> {
 	fn get_mut(&mut self, index: Index) -> Option<&mut Self::Output> {
 		let index = self.calculate_index(index);
-		self.items.get_mut(index)
+		index.and_then(|index| self.items.get_mut(index))
 	}
 }
 
