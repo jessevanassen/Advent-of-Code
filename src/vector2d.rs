@@ -29,7 +29,15 @@ impl std::ops::Neg for Vector2D {
 	type Output = Self;
 
 	fn neg(self) -> Self::Output {
-		Self(-self.0, -self.1)
+		self * -1
+	}
+}
+
+impl std::ops::Mul<isize> for Vector2D {
+	type Output = Self;
+
+	fn mul(self, rhs: isize) -> Self::Output {
+		Self(self.0 * rhs, self.1 * rhs)
 	}
 }
 
