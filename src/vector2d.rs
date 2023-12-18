@@ -1,9 +1,13 @@
 use std::num::TryFromIntError;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Vector2D(pub isize, pub isize);
 
 impl Vector2D {
+	pub fn manhattan_distance_to(self, other: Vector2D) -> usize {
+		self.0.abs_diff(other.0) + self.1.abs_diff(other.1)
+	}
+
 	pub fn rotate_cw(self) -> Vector2D {
 		assert!(self.0 == 0 || self.1 == 0);
 
