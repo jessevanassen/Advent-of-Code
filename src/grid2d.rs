@@ -45,6 +45,10 @@ impl<T> Grid2D<T> {
 		self.items.iter()
 	}
 
+	pub fn values_mut(&mut self) -> impl Iterator<Item = &mut T> {
+		self.items.iter_mut()
+	}
+
 	pub fn enumerate(&self) -> impl Iterator<Item = (Index, &T)> {
 		self.keys().zip(self.items.iter())
 	}
