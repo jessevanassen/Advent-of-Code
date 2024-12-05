@@ -1,62 +1,62 @@
-use std::io::stdin;
+use std::{cmp::Ordering, collections::HashSet, io::stdin};
+
+use tap::Pipe as _;
 
 fn main() {
-	let (ordering_rules, updates) = parse_input();
+	let (ordering_rules, updates) = parse_input::<_, Vec<_>>();
+
+	let comparator = create_comparator(ordering_rules);
 
 	let (correct_order, incorrect_order) = updates
-		.iter()
-		.partition::<Vec<_>, _>(|pages| is_in_correct_order(&ordering_rules, pages));
+		.into_iter()
+		.partition::<Vec<_>, _>(|pages| pages.is_sorted_by(|x, y| comparator(x, y).is_le()));
 
-	let part1 = correct_order.into_iter().map(middle).sum::<usize>();
+	let part1 = sum_middles(correct_order);
 	println!("Part 1: {part1}");
 
 	let part2 = incorrect_order
 		.into_iter()
-		.cloned()
 		.map(|mut pages| {
-			fix_order(&ordering_rules, &mut pages);
+			pages.sort_by(|x, y| comparator(x, y));
 			pages
 		})
-		.map(middle)
-		.sum::<usize>();
+		.pipe(sum_middles);
 	println!("Part 2: {part2}");
 }
 
-fn fix_order(ordering_rules: &[(usize, usize)], pages: &mut [usize]) {
-	for i in 0..(pages.len() - 1) {
-		while !page_is_in_correct_order(ordering_rules, pages[i], &pages[(i + 1)..]) {
-			rotate(&mut pages[i..]);
+fn create_comparator(
+	ordering_rules: HashSet<(usize, usize)>,
+) -> impl (Fn(&usize, &usize) -> Ordering) {
+	move |lhs, rhs| {
+		if ordering_rules.contains(&(*lhs, *rhs)) {
+			Ordering::Less
+		} else if ordering_rules.contains(&(*rhs, *lhs)) {
+			Ordering::Greater
+		} else {
+			Ordering::Equal
 		}
 	}
 }
 
-/// Moves the first item to the end, second item to the front, etc.
-fn rotate<T>(xs: &mut [T]) {
-	for i in 0..(xs.len() - 1) {
-		xs.swap(i, i + 1);
-	}
+fn sum_middles<IntoIter>(items: IntoIter) -> usize
+where
+	IntoIter: IntoIterator,
+	IntoIter::Item: AsRef<[usize]>,
+{
+	items
+		.into_iter()
+		.map(|xs| {
+			let xs = xs.as_ref();
+			xs[xs.len() / 2]
+		})
+		.sum()
 }
 
-fn is_in_correct_order(ordering_rules: &[(usize, usize)], pages: &[usize]) -> bool {
-	(0..(pages.len() - 1))
-		.all(|i| page_is_in_correct_order(ordering_rules, pages[i], &pages[(i + 1)..]))
-}
-
-fn page_is_in_correct_order(
-	ordering_rules: &[(usize, usize)],
-	page: usize,
-	after: &[usize],
-) -> bool {
-	after.iter()
-		.all(|other| ordering_rules.contains(&(page, *other)))
-}
-
-fn middle<T: Copy>(xs: impl AsRef<[T]>) -> T {
-	let xs = xs.as_ref();
-	xs[xs.len() / 2]
-}
-
-fn parse_input() -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
+fn parse_input<T, U>() -> (T, U)
+where
+	T: FromIterator<(usize, usize)>,
+	U: FromIterator<Vec<usize>>,
+{
 	let mut lines = stdin().lines().map(Result::unwrap);
 
 	let ordering_rules = (&mut lines)
