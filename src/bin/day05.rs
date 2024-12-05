@@ -1,6 +1,16 @@
-use std::{cmp::Ordering, collections::HashSet, io::stdin};
+use std::{cmp::Ordering, io::stdin};
 
+use aoc2024::bitset::{self, BitSet};
 use tap::Pipe as _;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct OrderingRule(u8, u8);
+
+impl bitset::IntoIndex for OrderingRule {
+	fn into_index(self) -> usize {
+		self.1 as usize * 100 + self.0 as usize
+	}
+}
 
 fn main() {
 	let (ordering_rules, updates) = parse_input::<_, Vec<_>>();
@@ -9,7 +19,7 @@ fn main() {
 
 	let (correct_order, incorrect_order) = updates
 		.into_iter()
-		.partition::<Vec<_>, _>(|pages| pages.is_sorted_by(|x, y| comparator(x, y).is_le()));
+		.partition::<Vec<_>, _>(|pages| pages.is_sorted_by(|&x, &y| comparator(x, y).is_le()));
 
 	let part1 = sum_middles(correct_order);
 	println!("Part 1: {part1}");
@@ -17,20 +27,18 @@ fn main() {
 	let part2 = incorrect_order
 		.into_iter()
 		.map(|mut pages| {
-			pages.sort_by(|x, y| comparator(x, y));
+			pages.sort_by(|&x, &y| comparator(x, y));
 			pages
 		})
 		.pipe(sum_middles);
 	println!("Part 2: {part2}");
 }
 
-fn create_comparator(
-	ordering_rules: HashSet<(usize, usize)>,
-) -> impl (Fn(&usize, &usize) -> Ordering) {
+fn create_comparator(ordering_rules: BitSet) -> impl (Fn(u8, u8) -> Ordering) {
 	move |lhs, rhs| {
-		if ordering_rules.contains(&(*lhs, *rhs)) {
+		if ordering_rules.contains(OrderingRule(lhs, rhs)) {
 			Ordering::Less
-		} else if ordering_rules.contains(&(*rhs, *lhs)) {
+		} else if ordering_rules.contains(OrderingRule(rhs, lhs)) {
 			Ordering::Greater
 		} else {
 			Ordering::Equal
@@ -38,10 +46,10 @@ fn create_comparator(
 	}
 }
 
-fn sum_middles<IntoIter>(items: IntoIter) -> usize
+fn sum_middles<IntoIter>(items: IntoIter) -> u64
 where
 	IntoIter: IntoIterator,
-	IntoIter::Item: AsRef<[usize]>,
+	IntoIter::Item: AsRef<[u8]>,
 {
 	items
 		.into_iter()
@@ -49,13 +57,13 @@ where
 			let xs = xs.as_ref();
 			xs[xs.len() / 2]
 		})
-		.sum()
+		.fold(0, |acc, x| acc + x as u64)
 }
 
 fn parse_input<T, U>() -> (T, U)
 where
-	T: FromIterator<(usize, usize)>,
-	U: FromIterator<Vec<usize>>,
+	T: FromIterator<OrderingRule>,
+	U: FromIterator<Vec<u8>>,
 {
 	let mut lines = stdin().lines().map(Result::unwrap);
 
@@ -63,7 +71,7 @@ where
 		.take_while(|line| !line.is_empty())
 		.map(|line| {
 			let (first, second) = line.split_once("|").unwrap();
-			(first.parse().unwrap(), second.parse().unwrap())
+			OrderingRule(first.parse().unwrap(), second.parse().unwrap())
 		})
 		.collect();
 
