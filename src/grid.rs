@@ -11,7 +11,7 @@ impl<T> Grid<T> {
 	where
 		T: Clone,
 	{
-		Self{
+		Self {
 			items: vec![items; width * height].into_boxed_slice(),
 			width,
 		}
@@ -19,11 +19,21 @@ impl<T> Grid<T> {
 
 	pub fn get(&self, index: impl Into<(usize, usize)>) -> Option<&T> {
 		let (x, y) = index.into();
+
+		if x >= self.width() {
+			return None;
+		}
+
 		self.items.get(y * self.width + x)
 	}
 
 	pub fn get_mut(&mut self, index: impl Into<(usize, usize)>) -> Option<&mut T> {
 		let (x, y) = index.into();
+
+		if x >= self.width() {
+			return None;
+		}
+
 		self.items.get_mut(y * self.width + x)
 	}
 
@@ -33,6 +43,18 @@ impl<T> Grid<T> {
 
 	pub fn height(&self) -> usize {
 		self.items.len() / self.width
+	}
+
+	pub fn indices(&self) -> impl Iterator<Item = (usize, usize)> + '_ {
+		(0..self.height()).flat_map(|y| (0..self.width()).map(move |x| (x, y)))
+	}
+
+	pub fn iter(&self) -> impl Iterator<Item = &T> + '_ {
+		self.items.iter()
+	}
+
+	pub fn enumerate(&self) -> impl Iterator<Item = ((usize, usize), &T)> + '_ {
+		self.indices().zip(self.iter())
 	}
 }
 
