@@ -1,3 +1,5 @@
+use std::ops::{Mul, MulAssign};
+
 #[derive(
 	Debug,
 	Clone,
@@ -32,6 +34,22 @@ impl Vector2D {
 			x: -self.y,
 			y: self.x,
 		}
+	}
+}
+
+impl MulAssign<i64> for Vector2D {
+	fn mul_assign(&mut self, rhs: i64) {
+		self.x *= rhs;
+		self.y *= rhs;
+	}
+}
+
+impl Mul<i64> for Vector2D {
+	type Output = Vector2D;
+
+	fn mul(mut self, rhs: i64) -> Self::Output {
+		self *= rhs;
+		self
 	}
 }
 
