@@ -8,9 +8,7 @@ fn main() {
 	let start_position: Vector2D = grid
 		.enumerate()
 		.find_map(|(position, square)| (square == &Square::Start).then_some(position))
-		.expect("Expect start position in input")
-		.try_into()
-		.unwrap();
+		.expect("Expect start position in input");
 
 	let route_positions = visited(&grid, start_position)
 		.unwrap()
@@ -31,7 +29,6 @@ fn main() {
 				position + Vector2D { x: 0, y: 1 },
 			]
 			.into_iter()
-			.filter_map(|position| <(usize, usize)>::try_from(position).ok())
 		})
 		.unique()
 		.filter(|&position| {
@@ -53,10 +50,7 @@ fn visited(grid: &Grid<Square>, mut position: Vector2D) -> Result<Visited, Visit
 	visited.insert((position, direction));
 
 	loop {
-		match <(usize, usize)>::try_from(position + direction)
-			.ok()
-			.and_then(|index| grid.get(index))
-		{
+		match grid.get(position + direction) {
 			None => {
 				/* Out of bounds */
 				return Ok(visited);
