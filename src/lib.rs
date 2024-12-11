@@ -1,5 +1,7 @@
 pub mod bitset;
 
+pub mod digits;
+
 mod grid;
 pub use grid::Grid;
 

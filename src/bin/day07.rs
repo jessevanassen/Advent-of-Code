@@ -1,6 +1,8 @@
 use std::io::stdin;
 use std::ops::{Add as _, Mul as _};
 
+use aoc2024::digits::count_digits;
+
 fn main() {
 	let input = parse_input().collect::<Vec<_>>();
 
@@ -16,8 +18,7 @@ fn main() {
 }
 
 fn concat(x: u64, y: u64) -> u64 {
-	let digits = if y > 0 { y.ilog10() + 1 } else { 1 };
-	x * 10u64.pow(digits) + y
+	x * 10u64.pow(count_digits(y)) + y
 }
 
 #[derive(derive_more::From)]
