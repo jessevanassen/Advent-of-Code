@@ -42,6 +42,14 @@ impl<T> Grid<T> {
 		self.items.len() as u64 / self.width
 	}
 
+	pub fn len(&self) -> u64 {
+		self.items.len() as _
+	}
+
+	pub fn is_empty(&self) -> bool {
+		self.len() == 0
+	}
+
 	pub fn indices(&self) -> impl Iterator<Item = Vector2D> + '_ {
 		(0..self.height() as i64)
 			.flat_map(|y| (0..self.width() as i64).map(move |x| Vector2D { x, y }))
@@ -64,9 +72,9 @@ impl<T> Grid<T> {
 	pub fn neighbors(&self, index: Vector2D) -> impl Iterator<Item = Vector2D> + '_ {
 		const DIRECTIONS: [Vector2D; 4] = [
 			Vector2D { x: 1, y: 0 },
-			Vector2D { x: 0, y: -1 },
-			Vector2D { x: -1, y: 0 },
 			Vector2D { x: 0, y: 1 },
+			Vector2D { x: -1, y: 0 },
+			Vector2D { x: 0, y: -1 },
 		];
 
 		DIRECTIONS

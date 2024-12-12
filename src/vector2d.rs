@@ -6,6 +6,8 @@ use std::ops::{Mul, MulAssign};
 	Copy,
 	PartialEq,
 	Eq,
+	PartialOrd,
+	Ord,
 	Hash,
 	derive_more::Add,
 	derive_more::AddAssign,
@@ -22,6 +24,17 @@ pub struct Vector2D {
 }
 
 impl Vector2D {
+	pub const HORIZONTAL_DIRECTIONS: [Vector2D; 2] =
+		[Vector2D { x: -1, y: 0 }, Vector2D { x: 1, y: 0 }];
+	pub const VERTICAL_DIRECTIONS: [Vector2D; 2] =
+		[Vector2D { x: 0, y: -1 }, Vector2D { x: 0, y: 1 }];
+	pub const DIRECTIONS: [Vector2D; 4] = [
+		Self::HORIZONTAL_DIRECTIONS[0],
+		Self::HORIZONTAL_DIRECTIONS[1],
+		Self::VERTICAL_DIRECTIONS[0],
+		Self::VERTICAL_DIRECTIONS[1],
+	];
+
 	pub fn rotate_cw(self) -> Self {
 		Self {
 			x: self.y,
@@ -34,6 +47,10 @@ impl Vector2D {
 			x: -self.y,
 			y: self.x,
 		}
+	}
+
+	pub fn manhattan_distance(self, other: Self) -> u64 {
+		self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
 	}
 }
 
