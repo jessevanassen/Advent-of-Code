@@ -2,6 +2,7 @@ use std::ops::{Mul, MulAssign};
 
 #[derive(
 	Debug,
+	Default,
 	Clone,
 	Copy,
 	PartialEq,
