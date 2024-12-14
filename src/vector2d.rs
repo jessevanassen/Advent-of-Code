@@ -36,6 +36,10 @@ impl Vector2D {
 		Self::VERTICAL_DIRECTIONS[1],
 	];
 
+	pub fn new(x: i64, y: i64) -> Self {
+		Self { x, y }
+	}
+
 	pub fn rotate_cw(self) -> Self {
 		Self {
 			x: self.y,
