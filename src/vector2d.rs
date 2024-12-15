@@ -59,6 +59,22 @@ impl Vector2D {
 	}
 }
 
+impl MulAssign for Vector2D {
+	fn mul_assign(&mut self, rhs: Self) {
+		self.x *= rhs.x;
+		self.y *= rhs.y;
+	}
+}
+
+impl Mul for Vector2D {
+	type Output = Self;
+
+	fn mul(mut self, rhs: Self) -> Self::Output {
+		self *= rhs;
+		self
+	}
+}
+
 impl MulAssign<i64> for Vector2D {
 	fn mul_assign(&mut self, rhs: i64) {
 		self.x *= rhs;

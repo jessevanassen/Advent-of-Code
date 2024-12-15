@@ -82,6 +82,12 @@ impl<T> Grid<T> {
 			.map(move |direction| index + direction)
 			.filter(|index| self.contains_index(*index))
 	}
+
+	pub fn swap(&mut self, a: Vector2D, b: Vector2D) {
+		let a = self.raw_index(a).unwrap();
+		let b = self.raw_index(b).unwrap();
+		self.items.swap(a, b);
+	}
 }
 
 impl<T> Index<Vector2D> for Grid<T> {
