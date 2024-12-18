@@ -63,6 +63,11 @@ impl<T> Grid<T> {
 		self.indices().zip(self.iter())
 	}
 
+	pub fn position(&self, mut predicate: impl FnMut(&T) -> bool) -> Option<Vector2D> {
+		self.enumerate()
+			.find_map(|(index, v)| predicate(v).then_some(index))
+	}
+
 	pub fn contains_index(&self, Vector2D { x, y }: Vector2D) -> bool {
 		let x_range = 0..self.width() as i64;
 		let y_range = 0..self.height() as i64;
