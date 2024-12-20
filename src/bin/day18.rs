@@ -51,10 +51,12 @@ fn find_first_blocking_corrupted_byte(map: &Map) -> Option<Vector2D> {
 
 	let path_is_blocked =
 		|corrupted_bytes_len| find_shortest_path(map, corrupted_bytes_len).is_none();
-	binary_search::find_leftmost(1..max_corrupted_bytes, path_is_blocked).map(|corrupted_bytes_len| {
-		map.position(|v| *v == Some(corrupted_bytes_len - 1))
-			.expect("Matching index should exist")
-	})
+	binary_search::find_leftmost(1..max_corrupted_bytes, path_is_blocked).map(
+		|corrupted_bytes_len| {
+			map.position(|v| *v == Some(corrupted_bytes_len - 1))
+				.expect("Matching index should exist")
+		},
+	)
 }
 
 fn parse_input() -> Map {
