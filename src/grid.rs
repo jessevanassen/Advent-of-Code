@@ -4,7 +4,7 @@ pub struct Grid<T> {
 	width: usize,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, derive_more::Add, derive_more::Sub)]
 pub struct Index {
 	pub row: usize,
 	pub column: usize,
@@ -40,9 +40,11 @@ impl<T> Grid<T> {
 		self.len() == 0
 	}
 
-	pub fn indices(&self) -> impl Iterator<Item = Index> {
-		(0..self.height())
-			.flat_map(|row| (0..self.width()).map(move |column| Index { row, column }))
+	pub fn indices(&self) -> impl Iterator<Item = Index> + 'static {
+		let width = self.width();
+		let height = self.height();
+
+		(0..height).flat_map(move |row| (0..width).map(move |column| Index { row, column }))
 	}
 
 	const fn to_vec_index(&self, Index { row, column }: Index) -> usize {
