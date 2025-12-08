@@ -7,4 +7,5 @@ rust-version = "1.91.0"
 [dependencies]
 anyhow = "1.0.100"
 derive_more = { version = "2.1.0", features = ["full"] }
+itertools = "0.14.0"
 thiserror = "2.0.17"
